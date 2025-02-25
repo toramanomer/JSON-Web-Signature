@@ -1,12 +1,7 @@
 import { Buffer } from 'node:buffer'
 import { AlgorithmParameterValue } from '@/alg'
-import { base64UrlEncode } from '@/utils/base64UrlEncode'
-import { createSignature } from '@/utils/createSignature'
+import { createFlattenedJws } from '@/flattened/createJws'
 
-/**
- * JWS Header Parameters as defined in RFC 7515
- * https://tools.ietf.org/html/rfc7515#section-4.1
- */
 export interface JWSHeaderParameters {
 	/**
 	 * **"alg" (Algorithm) Header Parameter**
@@ -111,7 +106,7 @@ export interface JWSHeaderParameters {
 /**
  * Options for creating a JWS
  */
-export interface CreateJWSOptions {
+export interface CreateCompactJwsInput {
 	/**
 	 * The payload to sign (can be any JSON serializable value)
 	 */
@@ -124,38 +119,17 @@ export interface CreateJWSOptions {
 
 	/**
 	 * The key used for signing
-	 * - For HMAC algorithms: a string or Buffer containing the secret
-	 * - For RSA and ECDSA algorithms: a private key in PEM format
 	 */
-	key: string | Buffer
+	key: Buffer
 }
 
-/**
- * Creates a JWS according to RFC 7515
- * Returns the JWS in compact serialization format
- */
-export function createJws({
-	payload,
-	protectedHeader,
-	key
-}: CreateJWSOptions): string {
-	// Step 1: Create the content to be used as the JWS Payload
-	const payloadStr =
-		typeof payload === 'string' ? payload : JSON.stringify(payload)
+export const createCompactJws = (input: CreateCompactJwsInput): string => {
+	const { payload, protectedHeader, key } = input
+	const {
+		protected: encodedHeader,
+		payload: encodedPayload,
+		signature: encodedSignature
+	} = createFlattenedJws({ key, payload, protectedHeader })
 
-	// Step 2: Compute the encoded payload value
-	const encodedPayload = base64UrlEncode(payloadStr)
-
-	// Step 3 & 4: Create the header and compute the encoded header value
-	const encodedHeader = base64UrlEncode(JSON.stringify(protectedHeader))
-
-	// Step 5: Compute the JWS Signature
-	const signingInput = `${encodedHeader}.${encodedPayload}`
-	const signature = createSignature(signingInput, protectedHeader.alg, key)
-
-	// Step 6: Compute the encoded signature value
-	const encodedSignature = base64UrlEncode(signature)
-
-	// Step 8: Create the JWS Compact Serialization
 	return `${encodedHeader}.${encodedPayload}.${encodedSignature}`
 }
