@@ -1,7 +1,7 @@
 import { Buffer } from 'node:buffer'
-import { createHmac, createSign, constants } from 'node:crypto'
 import { AlgorithmParameterValue } from '@/alg'
 import { base64UrlEncode } from '@/utils/base64UrlEncode'
+import { createSignature } from '@/utils/createSignature'
 
 /**
  * JWS Header Parameters as defined in RFC 7515
@@ -9,14 +9,16 @@ import { base64UrlEncode } from '@/utils/base64UrlEncode'
  */
 export interface JWSHeaderParameters {
 	/**
-	 * Algorithm (required)
+	 * **"alg" (Algorithm) Header Parameter**
+	 *
 	 * The "alg" (algorithm) Header Parameter identifies the cryptographic
 	 * algorithm used to secure the JWS.
 	 */
 	'alg': AlgorithmParameterValue
 
 	/**
-	 * JWK Set URL (optional)
+	 * **"jku" (JWK Set URL) Header Parameter**
+	 *
 	 * The "jku" (JWK Set URL) Header Parameter is a URI that refers to a resource
 	 * for a set of JSON-encoded public keys, one of which corresponds to the key
 	 * used to digitally sign the JWS.
@@ -24,21 +26,24 @@ export interface JWSHeaderParameters {
 	'jku'?: string
 
 	/**
-	 * JSON Web Key (optional)
+	 * **"jwk" (JSON Web Key) Header Parameter**
+	 *
 	 * The "jwk" (JSON Web Key) Header Parameter is the public key that
 	 * corresponds to the key used to digitally sign the JWS.
 	 */
 	'jwk'?: Record<string, any>
 
 	/**
-	 * Key ID (optional)
+	 * **"kid" (Key ID) Header Parameter**
+	 *
 	 * The "kid" (key ID) Header Parameter is a hint indicating which key
 	 * was used to secure the JWS.
 	 */
 	'kid'?: string
 
 	/**
-	 * X.509 URL (optional)
+	 * **"x5u" (X.509 URL) Header Parameter**
+	 *
 	 * The "x5u" (X.509 URL) Header Parameter is a URI that refers to a resource
 	 * for the X.509 public key certificate or certificate chain corresponding
 	 * to the key used to digitally sign the JWS.
@@ -46,7 +51,8 @@ export interface JWSHeaderParameters {
 	'x5u'?: string
 
 	/**
-	 * X.509 Certificate Chain (optional)
+	 * **"x5c" (X.509 Certificate Chain) Header Parameter**
+	 *
 	 * The "x5c" (X.509 Certificate Chain) Header Parameter contains the X.509
 	 * public key certificate or certificate chain corresponding to the key used
 	 * to digitally sign the JWS.
@@ -54,7 +60,8 @@ export interface JWSHeaderParameters {
 	'x5c'?: string[]
 
 	/**
-	 * X.509 Certificate SHA-1 Thumbprint (optional)
+	 * **"x5t" (X.509 Certificate SHA-1 Thumbprint) Header Parameter**
+	 *
 	 * The "x5t" (X.509 Certificate SHA-1 Thumbprint) Header Parameter is a
 	 * base64url-encoded SHA-1 thumbprint of the DER encoding of the X.509
 	 * certificate corresponding to the key used to digitally sign the JWS.
@@ -62,7 +69,8 @@ export interface JWSHeaderParameters {
 	'x5t'?: string
 
 	/**
-	 * X.509 Certificate SHA-256 Thumbprint (optional)
+	 * **"x5t#S256" (X.509 Certificate SHA-256 Thumbprint) Header Parameter**
+	 *
 	 * The "x5t#S256" (X.509 Certificate SHA-256 Thumbprint) Header Parameter is a
 	 * base64url-encoded SHA-256 thumbprint of the DER encoding of the X.509
 	 * certificate corresponding to the key used to digitally sign the JWS.
@@ -70,21 +78,24 @@ export interface JWSHeaderParameters {
 	'x5t#S256'?: string
 
 	/**
-	 * Type (optional)
+	 * **"typ" (Type) Header Parameter**
+	 *
 	 * The "typ" (type) Header Parameter is used by JWS applications to declare
 	 * the media type of this complete JWS.
 	 */
 	'typ'?: string
 
 	/**
-	 * Content Type (optional)
+	 * **"cty" (Content Type) Header Parameter**
+	 *
 	 * The "cty" (content type) Header Parameter is used by JWS applications to
 	 * declare the media type of the secured content (the payload).
 	 */
 	'cty'?: string
 
 	/**
-	 * Critical (optional)
+	 * **"crit" (Critical) Header Parameter**
+	 *
 	 * The "crit" (critical) Header Parameter indicates that extensions to
 	 * this specification and/or JWA are being used that MUST be understood
 	 * and processed.
@@ -147,78 +158,4 @@ export function createJws({
 
 	// Step 8: Create the JWS Compact Serialization
 	return `${encodedHeader}.${encodedPayload}.${encodedSignature}`
-}
-
-/**
- * Creates a signature based on the algorithm and key
- */
-function createSignature(
-	signingInput: string,
-	algorithm: AlgorithmParameterValue,
-	key: string | Buffer
-): Buffer {
-	switch (algorithm) {
-		// HMAC with SHA-2 Functions
-		case 'HS256':
-		case 'HS384':
-		case 'HS512': {
-			const bits = algorithm.slice(2)
-
-			// A key of the same size as the hash output
-			if (key.length * 8 < parseInt(bits))
-				throw new RangeError(`A key with at least ${bits} must be used`)
-
-			const hashAlg = `sha${bits}`
-			return createHmac(hashAlg, key).update(signingInput).digest()
-		}
-
-		// Digital Signature with RSASSA-PKCS1-v1_5
-		case 'RS256':
-		case 'RS384':
-		case 'RS512': {
-			if (key.length * 8 < 2048)
-				throw new RangeError(
-					`A key of size 2048 bits or larger MUST be used with ${algorithm}`
-				)
-
-			const hashAlg = `sha${algorithm.slice(2)}`
-			return createSign(hashAlg).update(signingInput).sign(key)
-		}
-
-		// Digital Signature with ECDSA
-		case 'ES256':
-		case 'ES384':
-		case 'ES512': {
-			const hashAlg = `sha${algorithm.slice(2)}`
-			return createSign(hashAlg).update(signingInput).sign(key)
-		}
-
-		// Digital Signature with RSASSA-PSS
-		case 'PS256':
-		case 'PS384':
-		case 'PS512': {
-			if (key.length * 8 < 2048)
-				throw new RangeError(
-					`A key of size 2048 bits or larger MUST be used with ${algorithm}`
-				)
-
-			const hashAlg = `sha${algorithm.slice(2)}`
-
-			return createSign(hashAlg)
-				.update(signingInput)
-				.sign({
-					key,
-					padding: constants.RSA_PKCS1_PSS_PADDING,
-					saltLength: parseInt(algorithm.slice(2)) / 8
-				})
-		}
-
-		// Using the Algorithm "none"
-		case 'none':
-			return Buffer.alloc(0)
-
-		// Should never reach here.
-		default:
-			throw new Error(`Unsupported algorithm: ${algorithm}`)
-	}
 }
