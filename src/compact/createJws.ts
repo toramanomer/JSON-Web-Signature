@@ -1,6 +1,7 @@
 import { Buffer } from 'node:buffer'
 import { createHmac, createSign, constants } from 'node:crypto'
 import { AlgorithmParameterValue } from '@/alg'
+import { base64UrlEncode } from '@/utils/base64UrlEncode'
 
 /**
  * JWS Header Parameters as defined in RFC 7515
@@ -116,15 +117,6 @@ export interface CreateJWSOptions {
 	 * - For RSA and ECDSA algorithms: a private key in PEM format
 	 */
 	key: string | Buffer
-}
-
-/**
- * Base64Url encodes a string or buffer
- */
-function base64UrlEncode(input: string | Buffer): string {
-	let str = typeof input === 'string' ? input : input.toString('binary')
-	let base64 = Buffer.from(str, 'binary').toString('base64')
-	return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
 }
 
 /**
