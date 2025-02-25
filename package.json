@@ -1,0 +1,22 @@
+{
+	"name": "json-web-signature",
+	"version": "1.0.0",
+	"scripts": {
+		"test": "vitest run",
+		"test:watch": "vitest",
+		"format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\""
+	},
+	"keywords": [
+		"jws",
+		"json web signature",
+		"rfc7515"
+	],
+	"description": "RFC 7515 JSON Web Signature (JWS) implementation for NodeJS",
+	"devDependencies": {
+		"@types/node": "^22.13.5",
+		"prettier": "3.5.2",
+		"tsx": "^4.19.3",
+		"typescript": "^5.7.3",
+		"vitest": "^3.0.7"
+	}
+}
