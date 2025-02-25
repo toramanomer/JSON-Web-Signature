@@ -1,6 +1,9 @@
 /**
  * Checks if the Header Parameter names in the protected and unprotected
  * headers are disjoint
+ *
+ * Only used for JSON serializations as there is no unprotected header
+ * in Compact serialization
  */
 export const isDisjoint = (
 	protectedHeader?: Record<string, unknown>,
