@@ -1,6 +1,6 @@
 import { Buffer } from 'node:buffer'
 import { KeyObject } from 'node:crypto'
-import { AlgorithmParameterValue } from '@/alg'
+import { AlgorithmParameterValue } from '@/utils/alg'
 import { createFlattenedJws } from '@/flattened/createJws'
 import { isObject } from '@/utils/isObject'
 

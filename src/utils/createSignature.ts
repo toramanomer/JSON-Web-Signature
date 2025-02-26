@@ -6,7 +6,7 @@ import {
 	hmacAlgParams,
 	rsaAlgParams,
 	rsaPssAlgParams
-} from '@/alg'
+} from '@/utils/alg'
 
 /**
  * Creates a signature based on the algorithm and key

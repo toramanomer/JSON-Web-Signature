@@ -4,7 +4,7 @@ import {
 	createVerify,
 	timingSafeEqual
 } from 'node:crypto'
-import { AlgorithmParameterValue } from '@/alg'
+import { AlgorithmParameterValue } from '@/utils/alg'
 
 export const verifySignature = (
 	signingInput: string,
