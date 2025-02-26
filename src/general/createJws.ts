@@ -1,4 +1,5 @@
 import { Buffer } from 'node:buffer'
+import { KeyObject } from 'node:crypto'
 import { base64UrlEncode } from '@/utils/base64UrlEncode'
 import { JWSHeaderParameters } from '@/compact/createJws'
 import { createFlattenedJws } from '@/flattened/createJws'
@@ -30,12 +31,7 @@ export interface CreateGeneralJwsInput {
 		 */
 		unprotectedHeader?: JWSHeaderParameters
 
-		/**
-		 * The key used for signing
-		 * - For HMAC algorithms: a string or Buffer containing the secret
-		 * - For RSA and ECDSA algorithms: a private key in PEM format
-		 */
-		key: Buffer
+		key: KeyObject
 	}[]
 }
 

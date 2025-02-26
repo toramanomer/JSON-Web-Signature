@@ -1,4 +1,5 @@
 import { Buffer } from 'node:buffer'
+import { KeyObject } from 'node:crypto'
 import { AlgorithmParameterValue } from '@/alg'
 import { createFlattenedJws } from '@/flattened/createJws'
 import { isObject } from '@/utils/isObject'
@@ -118,10 +119,7 @@ export interface CreateCompactJwsInput {
 	 */
 	protectedHeader: JWSHeaderParameters
 
-	/**
-	 * The key used for signing
-	 */
-	key: Buffer
+	key: KeyObject
 }
 
 export const createCompactJws = (input: CreateCompactJwsInput): string => {

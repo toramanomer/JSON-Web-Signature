@@ -1,4 +1,5 @@
 import { Buffer } from 'node:buffer'
+import { KeyObject } from 'node:crypto'
 
 import { base64UrlEncode } from '@/utils/base64UrlEncode'
 import { JWSHeaderParameters } from '@/compact/createJws'
@@ -30,7 +31,7 @@ export interface CreateFlattenedJwsInput {
 	/**
 	 * The key used for signing
 	 */
-	key: Buffer
+	key: KeyObject
 }
 
 export const createFlattenedJws = (input: CreateFlattenedJwsInput) => {
