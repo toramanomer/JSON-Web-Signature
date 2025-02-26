@@ -2,7 +2,7 @@ import { Buffer } from 'node:buffer'
 import { KeyObject } from 'node:crypto'
 
 import { base64UrlEncode } from '@/utils/base64UrlEncode'
-import { JWSHeaderParameters } from '@/compact/createJws'
+import { JWSHeaderParameters } from '@/serialization/compact/createJws'
 import { isDisjoint } from '@/utils/isDisjoint'
 import { isObject } from '@/utils/isObject'
 import { createSignature } from '@/crypto/sign'
