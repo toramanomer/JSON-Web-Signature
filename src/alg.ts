@@ -16,8 +16,7 @@ export const AlgorithmParameterValues = {
 	ES512: 'ES512',
 	PS256: 'PS256',
 	PS384: 'PS384',
-	PS512: 'PS512',
-	none: 'none'
+	PS512: 'PS512'
 }
 
 export type AlgorithmParameterValue = keyof typeof AlgorithmParameterValues

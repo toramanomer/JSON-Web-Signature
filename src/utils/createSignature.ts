@@ -68,10 +68,6 @@ export const createSignature = (
 				})
 		}
 
-		// Using the Algorithm "none"
-		case 'none':
-			return Buffer.alloc(0)
-
 		// Should never reach here.
 		default:
 			throw new Error(`Unsupported algorithm: ${algorithm}`)

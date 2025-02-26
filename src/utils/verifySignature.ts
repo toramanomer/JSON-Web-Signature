@@ -66,11 +66,6 @@ export const verifySignature = (
 				)
 		}
 
-		// Using the Algorithm "none"
-		case 'none':
-			// The signature must be empty for "none" algorithm
-			return signature.length === 0
-
 		// Should never reach here.
 		default:
 			throw new Error(`Unsupported algorithm: ${algorithm}`)
