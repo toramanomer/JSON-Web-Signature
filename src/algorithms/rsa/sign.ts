@@ -7,8 +7,11 @@ interface SignRsaInput {
 	signingInput: string
 }
 
-export const signRsa = (input: SignRsaInput): Buffer => {
-	const { key, algorithm, signingInput } = input
+export const signRsa = ({
+	key,
+	algorithm,
+	signingInput
+}: SignRsaInput): Buffer => {
 	const { asymmetricKeyType, hashAlg, minKeyBits, signKeyType } =
 		rsaParams[algorithm]
 

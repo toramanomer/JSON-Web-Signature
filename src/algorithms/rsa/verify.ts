@@ -8,8 +8,12 @@ interface VerifyRsaInput {
 	signature: Buffer
 }
 
-export const verifyRsa = (input: VerifyRsaInput): boolean => {
-	const { key, algorithm, signingInput, signature } = input
+export const verifyRsa = ({
+	key,
+	algorithm,
+	signingInput,
+	signature
+}: VerifyRsaInput): boolean => {
 	const { asymmetricKeyType, hashAlg, minKeyBits, verifyKeyType } =
 		rsaParams[algorithm]
 

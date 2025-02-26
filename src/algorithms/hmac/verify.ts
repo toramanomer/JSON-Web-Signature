@@ -8,8 +8,12 @@ interface VerifyHmacInput {
 	signature: Buffer
 }
 
-export const verifyHmac = (input: VerifyHmacInput): boolean => {
-	const { key, algorithm, signingInput, signature } = input
+export const verifyHmac = ({
+	key,
+	algorithm,
+	signingInput,
+	signature
+}: VerifyHmacInput): boolean => {
 	const { hashAlg, type, minKeyBytes } = hmacParams[algorithm]
 
 	if (key.type !== type)

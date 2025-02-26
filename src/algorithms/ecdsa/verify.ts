@@ -8,8 +8,12 @@ interface VerifyEcdsaInput {
 	signature: Buffer
 }
 
-export const verifyEcdsa = (input: VerifyEcdsaInput): boolean => {
-	const { key, algorithm, signingInput, signature } = input
+export const verifyEcdsa = ({
+	key,
+	algorithm,
+	signingInput,
+	signature
+}: VerifyEcdsaInput): boolean => {
 	const {
 		hashAlg,
 		namedCurve,

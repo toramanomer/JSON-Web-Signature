@@ -7,8 +7,11 @@ interface SignEcdsaInput {
 	signingInput: string
 }
 
-export const signEcdsa = (input: SignEcdsaInput): Buffer => {
-	const { key, algorithm, signingInput } = input
+export const signEcdsa = ({
+	key,
+	algorithm,
+	signingInput
+}: SignEcdsaInput): Buffer => {
 	const { hashAlg, namedCurve, signKeyType, asymmetricKeyType } =
 		ecdsaParams[algorithm]
 

@@ -8,8 +8,11 @@ interface SignHmacInput {
 	signingInput: string
 }
 
-export const signHmac = (input: SignHmacInput): Buffer => {
-	const { key, algorithm, signingInput } = input
+export const signHmac = ({
+	key,
+	algorithm,
+	signingInput
+}: SignHmacInput): Buffer => {
 	const { hashAlg, type, minKeyBytes } = hmacParams[algorithm]
 
 	if (key.type !== type)
