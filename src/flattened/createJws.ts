@@ -3,10 +3,9 @@ import { KeyObject } from 'node:crypto'
 
 import { base64UrlEncode } from '@/utils/base64UrlEncode'
 import { JWSHeaderParameters } from '@/compact/createJws'
-import { createSignature } from '@/utils/createSignature'
 import { isDisjoint } from '@/utils/isDisjoint'
 import { isObject } from '@/utils/isObject'
-
+import { createSignature } from '@/crypto/sign'
 /**
  * Options for creating a JWS with flattened JSON serialization
  */

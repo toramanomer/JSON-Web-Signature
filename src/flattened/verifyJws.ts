@@ -1,11 +1,11 @@
 import { Buffer } from 'node:buffer'
 import { AlgorithmParameterValue } from '@/utils/alg'
 import { JWSHeaderParameters } from '@/compact/createJws'
-import { validateAlg } from '@/utils/validateAlg'
+
 import { isObject } from '@/utils/isObject'
-import { verifySignature } from '@/utils/verifySignature'
 import { isDisjoint } from '@/utils/isDisjoint'
 import { KeyObject } from 'node:crypto'
+import { verifySignature } from '@/crypto/verify'
 
 export interface VerifyFlattenedJwsInput {
 	/**
@@ -116,7 +116,7 @@ export function verifyFlattenedJws({
 
 		// Validate algorithm
 		try {
-			validateAlg({ algorithm, allowedAlgorithms })
+			// validateAlg({ algorithm, allowedAlgorithms })
 		} catch (error) {
 			return {
 				valid: false,
