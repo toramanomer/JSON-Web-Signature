@@ -1,6 +1,7 @@
 import { Buffer } from 'node:buffer'
 import { AlgorithmParameterValue } from '@/alg'
 import { createFlattenedJws } from '@/flattened/createJws'
+import { isObject } from '@/utils/isObject'
 
 export interface JWSHeaderParameters {
 	/**
@@ -110,7 +111,7 @@ export interface CreateCompactJwsInput {
 	/**
 	 * The payload to sign (can be any JSON serializable value)
 	 */
-	payload: any
+	payload: Buffer
 
 	/**
 	 * The protected header parameters
@@ -124,6 +125,7 @@ export interface CreateCompactJwsInput {
 }
 
 export const createCompactJws = (input: CreateCompactJwsInput): string => {
+	if (!isObject(input)) throw new TypeError('Input must be an object')
 	const { payload, protectedHeader, key } = input
 	const {
 		protected: encodedHeader,
