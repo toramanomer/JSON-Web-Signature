@@ -1,7 +1,7 @@
 import type { Buffer } from 'node:buffer'
 import type { KeyObject } from 'node:crypto'
 
-import { AlgorithmParameterValue } from '@/utils/alg'
+import { type Algorithm } from '@/algorithms/algorithms'
 
 import { signHmac } from '@/algorithms/hmac/sign'
 import { signRsa } from '@/algorithms/rsa/sign'
@@ -10,7 +10,7 @@ import { signRsaPss } from '@/algorithms/rsa-pss/sign'
 
 export const createSignature = (
 	signingInput: string,
-	algorithm: AlgorithmParameterValue,
+	algorithm: Algorithm,
 	key: KeyObject
 ): Buffer => {
 	switch (algorithm) {

@@ -1,6 +1,6 @@
 import { Buffer } from 'node:buffer'
 import { KeyObject } from 'node:crypto'
-import { AlgorithmParameterValue } from '@/utils/alg'
+import { type Algorithm } from '@/algorithms/algorithms'
 import { createFlattenedJws } from '@/flattened/createJws'
 import { isObject } from '@/utils/isObject'
 
@@ -11,7 +11,7 @@ export interface JWSHeaderParameters {
 	 * The "alg" (algorithm) Header Parameter identifies the cryptographic
 	 * algorithm used to secure the JWS.
 	 */
-	'alg': AlgorithmParameterValue
+	'alg': Algorithm
 
 	/**
 	 * **"jku" (JWK Set URL) Header Parameter**

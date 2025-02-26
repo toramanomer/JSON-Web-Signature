@@ -1,5 +1,5 @@
 import { KeyObject } from 'node:crypto'
-import { AlgorithmParameterValue } from '@/utils/alg'
+import { Algorithms, type Algorithm } from '@/algorithms/algorithms'
 import { verifyFlattenedJws } from '@/flattened/verifyJws'
 import { isObject } from '@/utils/isObject'
 
@@ -11,7 +11,7 @@ export interface VerifyJWSOptions {
 
 	key: KeyObject
 
-	allowedAlgorithms?: AlgorithmParameterValue[]
+	allowedAlgorithms?: Algorithm[]
 }
 
 export function verifyCompactJws(input: VerifyJWSOptions) {

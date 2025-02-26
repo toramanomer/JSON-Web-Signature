@@ -1,7 +1,4 @@
-/**
- * Supported algorithms for JWS
- */
-export const AlgorithmParameterValues = {
+export const Algorithms = {
 	// HMAC with SHA-2 Functions
 	HS256: 'HS256',
 	HS384: 'HS384',
@@ -23,4 +20,4 @@ export const AlgorithmParameterValues = {
 	PS512: 'PS512'
 }
 
-export type AlgorithmParameterValue = keyof typeof AlgorithmParameterValues
+export type Algorithm = keyof typeof Algorithms

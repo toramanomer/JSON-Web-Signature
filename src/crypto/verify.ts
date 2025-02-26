@@ -1,7 +1,7 @@
 import type { Buffer } from 'node:buffer'
 import type { KeyObject } from 'node:crypto'
 
-import { AlgorithmParameterValue } from '@/utils/alg'
+import { type Algorithm } from '@/algorithms/algorithms'
 
 import { verifyHmac } from '@/algorithms/hmac/verify'
 import { verifyRsa } from '@/algorithms/rsa/verify'
@@ -11,7 +11,7 @@ import { verifyRsaPss } from '@/algorithms/rsa-pss/verify'
 export const verifySignature = (
 	signingInput: string,
 	signature: Buffer,
-	algorithm: AlgorithmParameterValue,
+	algorithm: Algorithm,
 	key: KeyObject
 ): boolean => {
 	switch (algorithm) {
