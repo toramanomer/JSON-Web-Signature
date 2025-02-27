@@ -1,38 +1,20 @@
-import { Buffer } from 'node:buffer'
-import { KeyObject } from 'node:crypto'
 import { base64UrlEncode } from '@/encoding/base64url'
-import { JWSHeaderParameters } from '@/types/jws'
-import { createFlattenedJws } from '@/serialization/flattened/createJws'
+import {
+	createFlattenedJws,
+	type CreateFlattenedJwsInput
+} from '@/serialization/flattened/createJws'
 import { isObject } from '@/validation/common/typeChecks'
 
 /**
  * Options for creating a JWS with general JSON serialization
  */
-export interface CreateGeneralJwsInput {
-	/**
-	 * The payload to sign (can be any JSON serializable value)
-	 */
-	payload: Buffer
-
+export interface CreateGeneralJwsInput
+	extends Pick<CreateFlattenedJwsInput, 'payload'> {
 	/**
 	 * Array of signature options
 	 * Each entry will produce one signature in the output
 	 */
-	signatures: {
-		/**
-		 * The protected header parameters
-		 * These parameters are integrity protected
-		 */
-		protectedHeader?: JWSHeaderParameters
-
-		/**
-		 * The unprotected header parameters
-		 * These parameters are not integrity protected
-		 */
-		unprotectedHeader?: JWSHeaderParameters
-
-		key: KeyObject
-	}[]
+	signatures: Omit<CreateFlattenedJwsInput, 'payload'>[]
 }
 
 export const createGeneralJws = (input: CreateGeneralJwsInput) => {
