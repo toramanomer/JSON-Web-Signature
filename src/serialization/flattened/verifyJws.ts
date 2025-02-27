@@ -8,6 +8,8 @@ import { verifySignature } from '@/crypto/verify'
 import { validateKid } from '@/validation/jws/validateKid'
 import { validateJwk } from '@/validation/jws/validateJwk'
 import { validateJku } from '@/validation/jws/validateJku'
+import { validateTyp } from '@/validation/jws/validateTyp'
+import { validateCty } from '@/validation/jws/validateCty'
 
 export interface VerifyFlattenedJwsInput {
 	/**
@@ -119,11 +121,15 @@ export function verifyFlattenedJws({
 				validateJwk(protectedHeader)
 				validateKid(protectedHeader)
 				validateJku(protectedHeader)
+				validateTyp(protectedHeader)
+				validateCty(protectedHeader)
 			}
 			if (header) {
 				validateJwk(header)
 				validateKid(header)
 				validateJku(header)
+				validateTyp(header)
+				validateCty(header)
 			}
 		} catch (error) {
 			return {

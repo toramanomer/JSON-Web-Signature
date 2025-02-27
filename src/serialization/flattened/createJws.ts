@@ -8,6 +8,8 @@ import { createSignature } from '@/crypto/sign'
 import { validateJwk } from '@/validation/jws/validateJwk'
 import { validateKid } from '@/validation/jws/validateKid'
 import { validateJku } from '@/validation/jws/validateJku'
+import { validateTyp } from '@/validation/jws/validateTyp'
+import { validateCty } from '@/validation/jws/validateCty'
 
 /**
  * Options for creating a JWS with flattened JSON serialization
@@ -73,11 +75,15 @@ export const createFlattenedJws = (input: CreateFlattenedJwsInput) => {
 		validateJwk(protectedHeader)
 		validateKid(protectedHeader)
 		validateJku(protectedHeader)
+		validateTyp(protectedHeader)
+		validateCty(protectedHeader)
 	}
 	if (unprotectedHeader) {
 		validateJwk(unprotectedHeader)
 		validateKid(unprotectedHeader)
 		validateJku(unprotectedHeader)
+		validateTyp(unprotectedHeader)
+		validateCty(unprotectedHeader)
 	}
 
 	const encodedPayload = base64UrlEncode(payload)
