@@ -1,13 +1,15 @@
+import type { KeyObject } from 'node:crypto'
 import { Buffer } from 'node:buffer'
-import { KeyObject } from 'node:crypto'
+import { isKeyObject } from 'node:util/types'
 
+import { type JWSHeaderParameters } from '@/types/jws'
 import { base64UrlEncode } from '@/encoding/base64url'
-import { JWSHeaderParameters } from '@/types/jws'
-import { isObject, isDisjoint } from '@/validation/common/typeChecks'
 import { createSignature } from '@/crypto/sign'
+
+import { isObject, isDisjoint } from '@/validation/common/typeChecks'
+import { validateJku } from '@/validation/jws/validateJku'
 import { validateJwk } from '@/validation/jws/validateJwk'
 import { validateKid } from '@/validation/jws/validateKid'
-import { validateJku } from '@/validation/jws/validateJku'
 import { validateTyp } from '@/validation/jws/validateTyp'
 import { validateCty } from '@/validation/jws/validateCty'
 
@@ -16,24 +18,62 @@ import { validateCty } from '@/validation/jws/validateCty'
  */
 export interface CreateFlattenedJwsInput {
 	/**
-	 * The payload to sign (can be any JSON serializable value)
+	 * **JWS Payload**
+	 *
+	 * The sequence of octets to be secured -- a.k.a. the message.
+	 * The payload can contain an arbitrary sequence of octets.
 	 */
 	payload: Buffer
 
 	/**
-	 * The protected header parameters
-	 * These parameters are integrity protected
+	 * **JWS Protected Header**
+	 *
+	 * JSON object that contains the Header Parameters that are integrity
+	 * protected by the JWS Signature digital signature or MAC operation.
+	 *
+	 * - The header is integrity-protected, meaning it is included in the signing process.
+	 * - The names of the header parameters in the protected header **must** be disjoint from the unprotected header.
 	 */
 	protectedHeader?: JWSHeaderParameters
 
 	/**
-	 * The unprotected header parameters
-	 * These parameters are not integrity protected
+	 * **JWS Unprotected Header**
+	 *
+	 * JSON object that contains the Header Parameters that are **not**
+	 * integrity protected.
+	 *
+	 * - The header is not integrity-protected, meaning it is not included in the signing process.
+	 * - The names of the header parameters in the unprotected header **must** be disjoint from the protected header.
 	 */
 	unprotectedHeader?: JWSHeaderParameters
 
 	/**
-	 * The key used for signing
+	 * The key used for signing.
+	 *
+	 * The key type and requirements depend on the **"alg"** header parameter value.
+	 * Different algorithms require different key types and sizes:
+	 *
+	 * ### HMAC
+	 * - `"HS256"`: Secret key with at least 256 bits
+	 * - `"HS384"`: Secret key with at least 384 bits
+	 * - `"HS512"`: Secret key with at least 512 bits
+	 *
+	 * ### RSASSA-PKCS1-v1_5
+	 * - `"RS256"`: Public RSA key with at least 2048-bit modulus
+	 * - `"RS384"`: Public RSA key with at least 2048-bit modulus
+	 * - `"RS512"`: Public RSA key with at least 2048-bit modulus
+	 *
+	 * ### ECDSA
+	 * - `"ES256"`: Public EC key with a P-256 curve
+	 * - `"ES384"`: Public EC key with a P-384 curve
+	 * - `"ES512"`: Public EC key with a P-521 curve
+	 *
+	 * ### RSASSA-PSS
+	 * - `"PS256"`: Public RSASSA-PSS key with at least 2048-bit modulus
+	 * - `"PS384"`: Public RSASSA-PSS key with at least 2048-bit modulus
+	 * - `"PS512"`: Public RSASSA-PSS key with at least 2048-bit modulus
+	 *
+	 * **Note**: The exact requirements for the key depend on the algorithm specified in the "alg" header.
 	 */
 	key: KeyObject
 }
@@ -42,6 +82,8 @@ export const createFlattenedJws = (input: CreateFlattenedJwsInput) => {
 	if (!isObject(input)) throw new TypeError('Argument must be an object')
 
 	const { key, payload, protectedHeader, unprotectedHeader } = input
+
+	if (!isKeyObject(key)) throw new TypeError('key must be a KeyObject')
 
 	// Validate payload
 	if (!Buffer.isBuffer(payload))
@@ -55,11 +97,10 @@ export const createFlattenedJws = (input: CreateFlattenedJwsInput) => {
 		throw new TypeError('unprotectedHeader must be an object if provided')
 
 	// Ensure at least one of protectedHeader or unprotectedHeader is provided
-	if (!protectedHeader && !unprotectedHeader) {
+	if (!protectedHeader && !unprotectedHeader)
 		throw new Error(
 			'Either protectedHeader or unprotectedHeader must be provided'
 		)
-	}
 
 	// Ensure header parameter names are disjoint
 	if (!isDisjoint(protectedHeader, unprotectedHeader))
@@ -67,31 +108,22 @@ export const createFlattenedJws = (input: CreateFlattenedJwsInput) => {
 			`Header Parameter names must be disjoint between protected and unprotected headers.`
 		)
 
-	const algorithm = protectedHeader?.alg || unprotectedHeader?.alg
-	if (!algorithm) throw new Error('algorithm is missing')
+	const joseHeader = { ...protectedHeader, ...unprotectedHeader }
 
-	// Validate header parameters in both protected and unprotected headers
-	if (protectedHeader) {
-		validateJwk(protectedHeader)
-		validateKid(protectedHeader)
-		validateJku(protectedHeader)
-		validateTyp(protectedHeader)
-		validateCty(protectedHeader)
-	}
-	if (unprotectedHeader) {
-		validateJwk(unprotectedHeader)
-		validateKid(unprotectedHeader)
-		validateJku(unprotectedHeader)
-		validateTyp(unprotectedHeader)
-		validateCty(unprotectedHeader)
-	}
+	if (!joseHeader.alg) throw new Error('algorithm is missing')
+
+	validateJku(joseHeader)
+	validateJwk(joseHeader as Pick<JWSHeaderParameters, 'jwk' | 'alg'>)
+	validateKid(joseHeader)
+	validateTyp(joseHeader)
+	validateCty(joseHeader)
 
 	const encodedPayload = base64UrlEncode(payload)
 	const encodedProtectedHeader =
 		protectedHeader ? base64UrlEncode(JSON.stringify(protectedHeader)) : ''
 	const signingInput = `${encodedProtectedHeader}.${encodedPayload}`
 
-	const signature = createSignature(signingInput, algorithm, key)
+	const signature = createSignature(signingInput, joseHeader.alg, key)
 	const encodedSignature = base64UrlEncode(signature)
 
 	return {
