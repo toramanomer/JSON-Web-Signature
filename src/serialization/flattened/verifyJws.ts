@@ -5,6 +5,8 @@ import { JWSHeaderParameters } from '@/types/jws'
 import { isObject, isDisjoint } from '@/validation/common/typeChecks'
 import { KeyObject } from 'node:crypto'
 import { verifySignature } from '@/crypto/verify'
+import { validateKid } from '@/validation/jws/validateKid'
+import { validateJwk } from '@/validation/jws/validateJwk'
 
 export interface VerifyFlattenedJwsInput {
 	/**
@@ -107,6 +109,23 @@ export function verifyFlattenedJws({
 			return {
 				valid: false,
 				error: 'Invalid JWS: Header Parameter names must be disjoint between protected and unprotected headers'
+			}
+		}
+
+		// Validate JWK and KID in both protected and unprotected headers
+		try {
+			if (protectedHeader) {
+				validateJwk(protectedHeader)
+				validateKid(protectedHeader)
+			}
+			if (header) {
+				validateJwk(header)
+				validateKid(header)
+			}
+		} catch (error) {
+			return {
+				valid: false,
+				error: error instanceof Error ? error.message : String(error)
 			}
 		}
 
