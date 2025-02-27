@@ -1,24 +1,24 @@
-import { Buffer } from 'node:buffer'
-import { KeyObject } from 'node:crypto'
-import { createFlattenedJws } from '@/serialization/flattened/createJws'
-import { isObject } from '@/validation/common/typeChecks'
 import { type JWSHeaderParameters } from '@/types/jws'
+import {
+	createFlattenedJws,
+	type CreateFlattenedJwsInput
+} from '@/serialization/flattened/createJws'
+import { isObject } from '@/validation/common/typeChecks'
 
 /**
- * Options for creating a JWS
+ * Options for creating a JWS with compact serialization
  */
-export interface CreateCompactJwsInput {
+export interface CreateCompactJwsInput
+	extends Pick<CreateFlattenedJwsInput, 'payload' | 'key'> {
 	/**
-	 * The payload to sign (can be any JSON serializable value)
-	 */
-	payload: Buffer
-
-	/**
-	 * The protected header parameters
+	 * **JWS Protected Header**
+	 *
+	 * JSON object that contains the Header Parameters that are integrity
+	 * protected by the JWS Signature digital signature or MAC operation.
+	 *
+	 * - The header is integrity-protected, meaning it is included in the signing process.
 	 */
 	protectedHeader: JWSHeaderParameters
-
-	key: KeyObject
 }
 
 export const createCompactJws = (input: CreateCompactJwsInput): string => {
