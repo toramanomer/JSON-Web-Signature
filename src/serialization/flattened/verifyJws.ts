@@ -2,8 +2,7 @@ import { Buffer } from 'node:buffer'
 import { Algorithm } from '@/algorithms/algorithms'
 import { JWSHeaderParameters } from '@/types/jws'
 
-import { isObject } from '@/utils/isObject'
-import { isDisjoint } from '@/utils/isDisjoint'
+import { isObject, isDisjoint } from '@/validation/common/typeChecks'
 import { KeyObject } from 'node:crypto'
 import { verifySignature } from '@/crypto/verify'
 

@@ -1,9 +1,9 @@
 import { Buffer } from 'node:buffer'
 import { KeyObject } from 'node:crypto'
-import { base64UrlEncode } from '@/utils/base64UrlEncode'
+import { base64UrlEncode } from '@/encoding/base64url'
 import { JWSHeaderParameters } from '@/types/jws'
 import { createFlattenedJws } from '@/serialization/flattened/createJws'
-import { isObject } from '@/utils/isObject'
+import { isObject } from '@/validation/common/typeChecks'
 
 /**
  * Options for creating a JWS with general JSON serialization
