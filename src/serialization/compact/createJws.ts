@@ -1,7 +1,7 @@
 import { Buffer } from 'node:buffer'
 import { KeyObject } from 'node:crypto'
 import { type Algorithm } from '@/algorithms/algorithms'
-import { createFlattenedJws } from '@/flattened/createJws'
+import { createFlattenedJws } from '@/serialization/flattened/createJws'
 import { isObject } from '@/utils/isObject'
 
 export interface JWSHeaderParameters {

@@ -1,5 +1,5 @@
 import { Buffer } from 'node:buffer'
-import { AlgorithmParameterValue } from '@/utils/alg'
+import { Algorithm } from '@/algorithms/algorithms'
 import { JWSHeaderParameters } from '@/serialization/compact/createJws'
 
 import { isObject } from '@/utils/isObject'
@@ -24,7 +24,7 @@ export interface VerifyFlattenedJwsInput {
 	 * Optional list of allowed algorithms
 	 * If provided, the algorithm in the JWS header must be in this list
 	 */
-	allowedAlgorithms?: AlgorithmParameterValue[]
+	allowedAlgorithms?: Algorithm[]
 }
 
 type ValidJWSResult = { valid: true; payload: any; header: Record<string, any> }
@@ -152,7 +152,7 @@ export function verifyFlattenedJws({
 		const isValid = verifySignature(
 			signatureInput,
 			signatureBuffer,
-			algorithm as AlgorithmParameterValue,
+			algorithm as Algorithm,
 			key
 		)
 
