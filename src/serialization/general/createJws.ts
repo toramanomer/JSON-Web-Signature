@@ -19,7 +19,9 @@ export interface CreateGeneralJwsInput
 
 export const createGeneralJws = (input: CreateGeneralJwsInput) => {
 	if (!isObject(input)) throw new TypeError('Argument must be an object')
-	if (!input.signatures?.length)
+	if (!Array.isArray(input.signatures))
+		throw new Error('The "signatures" property must be an array')
+	if (!input.signatures.length)
 		throw new Error('At least one signature must be provided')
 
 	const encodedPayload = base64UrlEncode(input.payload)
