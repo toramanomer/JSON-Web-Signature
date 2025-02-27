@@ -1,4 +1,4 @@
-import { type JWSHeaderParameters } from '@/types/jws'
+import type { JWSProtectedHeader } from '@/types/jws'
 import {
 	createFlattenedJws,
 	type CreateFlattenedJwsInput
@@ -18,7 +18,7 @@ export interface CreateCompactJwsInput
 	 *
 	 * - The header is integrity-protected, meaning it is included in the signing process.
 	 */
-	protectedHeader: JWSHeaderParameters
+	protectedHeader: JWSProtectedHeader
 }
 
 export const createCompactJws = (input: CreateCompactJwsInput): string => {

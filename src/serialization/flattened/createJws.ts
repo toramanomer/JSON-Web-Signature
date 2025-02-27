@@ -2,7 +2,11 @@ import type { KeyObject } from 'node:crypto'
 import { Buffer } from 'node:buffer'
 import { isKeyObject } from 'node:util/types'
 
-import { type JWSHeaderParameters } from '@/types/jws'
+import {
+	JWSProtectedHeader,
+	JWSUnprotectedHeader,
+	type JWSHeaderParameters
+} from '@/types/jws'
 import { base64UrlEncode } from '@/encoding/base64url'
 import { createSignature } from '@/crypto/sign'
 
@@ -12,6 +16,7 @@ import { validateJwk } from '@/validation/jws/validateJwk'
 import { validateKid } from '@/validation/jws/validateKid'
 import { validateTyp } from '@/validation/jws/validateTyp'
 import { validateCty } from '@/validation/jws/validateCty'
+import { validateCrit } from '@/validation/jws/validateCrit'
 
 /**
  * Options for creating a JWS with flattened JSON serialization
@@ -34,7 +39,7 @@ export interface CreateFlattenedJwsInput {
 	 * - The header is integrity-protected, meaning it is included in the signing process.
 	 * - The names of the header parameters in the protected header **must** be disjoint from the unprotected header.
 	 */
-	protectedHeader?: JWSHeaderParameters
+	protectedHeader?: JWSProtectedHeader
 
 	/**
 	 * **JWS Unprotected Header**
@@ -45,7 +50,7 @@ export interface CreateFlattenedJwsInput {
 	 * - The header is not integrity-protected, meaning it is not included in the signing process.
 	 * - The names of the header parameters in the unprotected header **must** be disjoint from the protected header.
 	 */
-	unprotectedHeader?: JWSHeaderParameters
+	unprotectedHeader?: JWSUnprotectedHeader
 
 	/**
 	 * The key used for signing.
@@ -112,11 +117,12 @@ export const createFlattenedJws = (input: CreateFlattenedJwsInput) => {
 
 	if (!joseHeader.alg) throw new Error('algorithm is missing')
 
-	validateJku(joseHeader)
+	validateJku(joseHeader.jku)
 	validateJwk(joseHeader as Pick<JWSHeaderParameters, 'jwk' | 'alg'>)
-	validateKid(joseHeader)
-	validateTyp(joseHeader)
-	validateCty(joseHeader)
+	validateKid(joseHeader.kid)
+	validateTyp(joseHeader.typ)
+	validateCty(joseHeader.cty)
+	validateCrit({ protectedHeader, unprotectedHeader })
 
 	const encodedPayload = base64UrlEncode(payload)
 	const encodedProtectedHeader =

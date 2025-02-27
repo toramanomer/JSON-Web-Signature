@@ -100,3 +100,33 @@ export interface JWSHeaderParameters {
 	 */
 	[key: string]: any
 }
+
+/**
+ * **JWS Protected Header
+ *
+ * The protected header is the header that is integrity-protected by the JWS
+ * signature or MAC operation.
+ */
+export interface JWSProtectedHeader extends JWSHeaderParameters {}
+
+/**
+ * **JWS Unprotected Header**
+ *
+ * The unprotected header is the header that is not integrity-protected by the
+ * JWS signature or MAC operation.
+ */
+export interface JWSUnprotectedHeader
+	extends Pick<
+			JWSHeaderParameters,
+			| 'alg'
+			| 'jku'
+			| 'jwk'
+			| 'kid'
+			| 'x5u'
+			| 'x5c'
+			| 'x5t'
+			| 'x5t#S256'
+			| 'typ'
+			| 'cty'
+		>,
+		Record<string, any> {}

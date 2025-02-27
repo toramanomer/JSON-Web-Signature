@@ -1,7 +1,6 @@
-import { type JWSHeaderParameters } from '@/types/jws'
 import { isString } from '@/validation/common/typeChecks'
 
-export const validateTyp = ({ typ }: Pick<JWSHeaderParameters, 'typ'>) => {
+export const validateTyp = (typ: undefined | string) => {
 	if (!typ) return
 
 	if (!isString(typ))
