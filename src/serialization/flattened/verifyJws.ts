@@ -7,6 +7,7 @@ import { KeyObject } from 'node:crypto'
 import { verifySignature } from '@/crypto/verify'
 import { validateKid } from '@/validation/jws/validateKid'
 import { validateJwk } from '@/validation/jws/validateJwk'
+import { validateJku } from '@/validation/jws/validateJku'
 
 export interface VerifyFlattenedJwsInput {
 	/**
@@ -112,15 +113,17 @@ export function verifyFlattenedJws({
 			}
 		}
 
-		// Validate JWK and KID in both protected and unprotected headers
+		// Validate header parameters in both protected and unprotected headers
 		try {
 			if (protectedHeader) {
 				validateJwk(protectedHeader)
 				validateKid(protectedHeader)
+				validateJku(protectedHeader)
 			}
 			if (header) {
 				validateJwk(header)
 				validateKid(header)
+				validateJku(header)
 			}
 		} catch (error) {
 			return {

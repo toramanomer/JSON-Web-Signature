@@ -7,6 +7,7 @@ import { isObject, isDisjoint } from '@/validation/common/typeChecks'
 import { createSignature } from '@/crypto/sign'
 import { validateJwk } from '@/validation/jws/validateJwk'
 import { validateKid } from '@/validation/jws/validateKid'
+import { validateJku } from '@/validation/jws/validateJku'
 
 /**
  * Options for creating a JWS with flattened JSON serialization
@@ -67,14 +68,16 @@ export const createFlattenedJws = (input: CreateFlattenedJwsInput) => {
 	const algorithm = protectedHeader?.alg || unprotectedHeader?.alg
 	if (!algorithm) throw new Error('algorithm is missing')
 
-	// Validate JWK and KID in both protected and unprotected headers
+	// Validate header parameters in both protected and unprotected headers
 	if (protectedHeader) {
 		validateJwk(protectedHeader)
 		validateKid(protectedHeader)
+		validateJku(protectedHeader)
 	}
 	if (unprotectedHeader) {
 		validateJwk(unprotectedHeader)
 		validateKid(unprotectedHeader)
+		validateJku(unprotectedHeader)
 	}
 
 	const encodedPayload = base64UrlEncode(payload)
