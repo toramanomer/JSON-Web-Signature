@@ -1,6 +1,6 @@
 import { Buffer } from 'node:buffer'
 import { Algorithm } from '@/algorithms/algorithms'
-import { JWSHeaderParameters } from '@/serialization/compact/createJws'
+import { JWSHeaderParameters } from '@/types/jws'
 
 import { isObject } from '@/utils/isObject'
 import { isDisjoint } from '@/utils/isDisjoint'

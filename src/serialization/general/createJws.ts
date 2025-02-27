@@ -1,7 +1,7 @@
 import { Buffer } from 'node:buffer'
 import { KeyObject } from 'node:crypto'
 import { base64UrlEncode } from '@/utils/base64UrlEncode'
-import { JWSHeaderParameters } from '@/serialization/compact/createJws'
+import { JWSHeaderParameters } from '@/types/jws'
 import { createFlattenedJws } from '@/serialization/flattened/createJws'
 import { isObject } from '@/utils/isObject'
 
