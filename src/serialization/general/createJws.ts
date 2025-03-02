@@ -3,7 +3,7 @@ import {
 	createFlattenedJws,
 	type CreateFlattenedJwsInput
 } from '@/serialization/flattened/createJws'
-import { isObject } from '@/validation/common/typeChecks'
+import { isJsonObject } from '@/validation/common/isJsonObject'
 
 /**
  * Options for creating a JWS with general JSON serialization
@@ -18,7 +18,7 @@ export interface CreateGeneralJwsInput
 }
 
 export const createGeneralJws = (input: CreateGeneralJwsInput) => {
-	if (!isObject(input)) throw new TypeError('Argument must be an object')
+	if (!isJsonObject(input)) throw new TypeError('Argument must be an object')
 	if (!Array.isArray(input.signatures))
 		throw new Error('The "signatures" property must be an array')
 	if (!input.signatures.length)

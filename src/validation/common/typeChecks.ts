@@ -1,48 +1,6 @@
 export const isString = (value: unknown): value is string =>
 	typeof value === 'string'
 
-const isNumber = (value: unknown): value is number =>
-	typeof value === 'number' && !isNaN(value) && isFinite(value)
-
-const isJsonValue = (value: unknown) => {
-	switch (true) {
-		case isString(value):
-		case isNumber(value):
-		case typeof value === 'boolean':
-		case value === null:
-			return true
-	}
-
-	if (Array.isArray(value)) {
-		for (const item of value)
-			if (isJsonValue(item)) continue
-			else return false
-		return true
-	}
-
-	return isObject(value)
-}
-
-type JsonPrimative = string | number | boolean | null
-type JsonArray = JsonPrimative | JsonComposite[]
-type JsonObject = { [key: string]: JsonPrimative | JsonComposite }
-type JsonComposite = JsonArray | JsonObject
-
-export const isObject = (value: unknown): value is JsonObject => {
-	if (
-		typeof value !== 'object' ||
-		value === null ||
-		Object.getPrototypeOf(value) !== Object.prototype
-	)
-		return false
-
-	for (const v of Object.values(value))
-		if (isJsonValue(v)) continue
-		else return false
-
-	return true
-}
-
 /**
  * Checks if two objects have no common keys
  */

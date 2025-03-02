@@ -1,15 +1,18 @@
 import { Buffer } from 'node:buffer'
+import { KeyObject } from 'node:crypto'
+
 import { Algorithm } from '@/algorithms/algorithms'
 import { JWSHeaderParameters } from '@/types/jws'
 
-import { isObject, isDisjoint } from '@/validation/common/typeChecks'
-import { KeyObject } from 'node:crypto'
 import { verifySignature } from '@/crypto/verify'
+import { isDisjoint } from '@/validation/common/typeChecks'
+import { isJsonObject } from '@/validation/common/isJsonObject'
 import { validateKid } from '@/validation/jws/validateKid'
 import { validateJwk } from '@/validation/jws/validateJwk'
 import { validateJku } from '@/validation/jws/validateJku'
 import { validateTyp } from '@/validation/jws/validateTyp'
 import { validateCty } from '@/validation/jws/validateCty'
+import { validateCrit } from '@/validation/jws/validateCrit'
 
 export interface VerifyFlattenedJwsInput {
 	/**
@@ -44,7 +47,7 @@ export function verifyFlattenedJws({
 }: VerifyFlattenedJwsInput): VerifyJWSResult {
 	try {
 		// Validate input structure
-		if (!isObject(jws)) {
+		if (!isJsonObject(jws)) {
 			return { valid: false, error: 'Invalid JWS: must be an object' }
 		}
 
@@ -100,7 +103,7 @@ export function verifyFlattenedJws({
 		}
 
 		// Validate header if present
-		if (header && !isObject(header)) {
+		if (header && !isJsonObject(header)) {
 			return {
 				valid: false,
 				error: 'Invalid JWS: header must be an object if present'
@@ -115,31 +118,8 @@ export function verifyFlattenedJws({
 			}
 		}
 
-		// Validate header parameters in both protected and unprotected headers
-		try {
-			if (protectedHeader) {
-				validateJwk(protectedHeader)
-				validateKid(protectedHeader)
-				validateJku(protectedHeader)
-				validateTyp(protectedHeader)
-				validateCty(protectedHeader)
-			}
-			if (header) {
-				validateJwk(header)
-				validateKid(header)
-				validateJku(header)
-				validateTyp(header)
-				validateCty(header)
-			}
-		} catch (error) {
-			return {
-				valid: false,
-				error: error instanceof Error ? error.message : String(error)
-			}
-		}
-
-		// Get algorithm from either header
-		const algorithm = protectedHeader?.alg || header?.alg
+		const joseHeader = { ...protectedHeader, ...header }
+		const algorithm = joseHeader.alg
 
 		// Validate algorithm
 		try {
@@ -150,6 +130,22 @@ export function verifyFlattenedJws({
 				error: error instanceof Error ? error.message : String(error)
 			}
 		}
+
+		try {
+			validateJku(joseHeader.jku)
+			validateJwk(joseHeader as Pick<JWSHeaderParameters, 'jwk' | 'alg'>)
+			validateKid(joseHeader.kid)
+			validateTyp(joseHeader.typ)
+			validateCty(joseHeader.cty)
+			validateCrit({ protectedHeader, unprotectedHeader: header })
+		} catch (error) {
+			return {
+				valid: false,
+				error: error instanceof Error ? error.message : String(error)
+			}
+		}
+
+		// Get algorithm from either header
 
 		// Decode payload
 		let decodedPayload: any

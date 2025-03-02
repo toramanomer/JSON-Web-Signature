@@ -10,7 +10,8 @@ import {
 import { base64UrlEncode } from '@/encoding/base64url'
 import { createSignature } from '@/crypto/sign'
 
-import { isObject, isDisjoint } from '@/validation/common/typeChecks'
+import { isDisjoint } from '@/validation/common/typeChecks'
+import { isJsonObject } from '@/validation/common/isJsonObject'
 import { validateJku } from '@/validation/jws/validateJku'
 import { validateJwk } from '@/validation/jws/validateJwk'
 import { validateKid } from '@/validation/jws/validateKid'
@@ -84,7 +85,7 @@ export interface CreateFlattenedJwsInput {
 }
 
 export const createFlattenedJws = (input: CreateFlattenedJwsInput) => {
-	if (!isObject(input)) throw new TypeError('Argument must be an object')
+	if (!isJsonObject(input)) throw new TypeError('Argument must be an object')
 
 	const { key, payload, protectedHeader, unprotectedHeader } = input
 
@@ -95,10 +96,10 @@ export const createFlattenedJws = (input: CreateFlattenedJwsInput) => {
 		throw new TypeError('payload must be a buffer')
 
 	// Validate protectedHeader if present
-	if (!!protectedHeader && !isObject(protectedHeader))
+	if (!!protectedHeader && !isJsonObject(protectedHeader))
 		throw new TypeError('protectedHeader must be an object if provided')
 	// Validate protectedHeader if present
-	if (!!unprotectedHeader && !isObject(unprotectedHeader))
+	if (!!unprotectedHeader && !isJsonObject(unprotectedHeader))
 		throw new TypeError('unprotectedHeader must be an object if provided')
 
 	// Ensure at least one of protectedHeader or unprotectedHeader is provided

@@ -1,7 +1,7 @@
 import { KeyObject } from 'node:crypto'
 import { type Algorithm } from '@/algorithms/algorithms'
 import { verifyFlattenedJws } from '@/serialization/flattened/verifyJws'
-import { isObject } from '@/validation/common/typeChecks'
+import { isJsonObject } from '@/validation/common/isJsonObject'
 
 export interface VerifyJWSOptions {
 	/**
@@ -15,7 +15,7 @@ export interface VerifyJWSOptions {
 }
 
 export function verifyCompactJws(input: VerifyJWSOptions) {
-	if (!isObject(input)) throw new TypeError('Expected object')
+	if (!isJsonObject(input)) throw new TypeError('Expected object')
 
 	const { jws, key, allowedAlgorithms } = input
 
