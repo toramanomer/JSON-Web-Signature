@@ -1,4 +1,4 @@
-import { isString } from '@/validation/common/typeChecks'
+import { isString } from '../common/isString'
 
 export const validateTyp = (typ: undefined | string) => {
 	if (!typ) return

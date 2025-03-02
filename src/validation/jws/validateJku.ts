@@ -1,4 +1,4 @@
-import { isString } from '@/validation/common/typeChecks'
+import { isString } from '../common/isString'
 
 export const validateJku = (jku: undefined | string) => {
 	if (!jku) return

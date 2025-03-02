@@ -1,6 +1,6 @@
 import { type Algorithm } from '@/algorithms/algorithms'
 import { JWSHeaderParameters } from '@/types/jws'
-import { isString } from '@/validation/common/typeChecks'
+import { isString } from '../common/isString'
 import { isJsonObject } from '../common/isJsonObject'
 
 const ALLOWED_EC_CURVES = ['P-256', 'P-384', 'P-521'] as const

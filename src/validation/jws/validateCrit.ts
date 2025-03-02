@@ -1,5 +1,5 @@
 import type { JWSProtectedHeader, JWSUnprotectedHeader } from '@/types/jws'
-import { isString } from '../common/typeChecks'
+import { isString } from '../common/isString'
 
 const REGISTERED_HEADER_PARAMETERS = new Set([
 	'alg',
