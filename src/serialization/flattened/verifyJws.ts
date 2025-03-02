@@ -5,7 +5,7 @@ import { Algorithm } from '@/algorithms/algorithms'
 import { JWSHeaderParameters } from '@/types/jws'
 
 import { verifySignature } from '@/crypto/verify'
-import { isDisjoint } from '@/validation/common/typeChecks'
+import { isDisjoint } from '@/validation/common/isDisjoint'
 import { isJsonObject } from '@/validation/common/isJsonObject'
 import { validateKid } from '@/validation/jws/validateKid'
 import { validateJwk } from '@/validation/jws/validateJwk'

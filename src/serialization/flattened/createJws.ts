@@ -10,7 +10,7 @@ import {
 import { base64UrlEncode } from '@/encoding/base64url'
 import { createSignature } from '@/crypto/sign'
 
-import { isDisjoint } from '@/validation/common/typeChecks'
+import { isDisjoint } from '@/validation/common/isDisjoint'
 import { isJsonObject } from '@/validation/common/isJsonObject'
 import { validateJku } from '@/validation/jws/validateJku'
 import { validateJwk } from '@/validation/jws/validateJwk'
