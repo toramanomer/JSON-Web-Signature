@@ -120,7 +120,7 @@ export const createFlattenedJws = (input: CreateFlattenedJwsInput) => {
 
 	validateJku(joseHeader)
 	validateJwk(joseHeader as Pick<JWSHeaderParameters, 'jwk' | 'alg'>)
-	validateKid(joseHeader.kid)
+	validateKid(joseHeader)
 	validateTyp(joseHeader)
 	validateCty(joseHeader)
 	validateCrit({ protectedHeader, unprotectedHeader })
