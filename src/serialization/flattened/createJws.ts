@@ -118,7 +118,7 @@ export const createFlattenedJws = (input: CreateFlattenedJwsInput) => {
 
 	if (!joseHeader.alg) throw new Error('algorithm is missing')
 
-	validateJku(joseHeader.jku)
+	validateJku(joseHeader)
 	validateJwk(joseHeader as Pick<JWSHeaderParameters, 'jwk' | 'alg'>)
 	validateKid(joseHeader.kid)
 	validateTyp(joseHeader)
