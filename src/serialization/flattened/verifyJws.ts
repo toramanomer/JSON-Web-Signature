@@ -5,8 +5,11 @@ import { Algorithm } from '@/algorithms/algorithms'
 import { JWSHeaderParameters } from '@/types/jws'
 
 import { verifySignature } from '@/crypto/verify'
+
+import { isObject } from '@/validation/common/isObject'
 import { isDisjoint } from '@/validation/common/isDisjoint'
 import { isJsonObject } from '@/validation/common/isJsonObject'
+
 import { validateKid } from '@/validation/jws/validateKid'
 import { validateJwk } from '@/validation/jws/validateJwk'
 import { validateJku } from '@/validation/jws/validateJku'
@@ -47,9 +50,8 @@ export function verifyFlattenedJws({
 }: VerifyFlattenedJwsInput): VerifyJWSResult {
 	try {
 		// Validate input structure
-		if (!isJsonObject(jws)) {
+		if (!isObject(jws))
 			return { valid: false, error: 'Invalid JWS: must be an object' }
-		}
 
 		const {
 			payload,

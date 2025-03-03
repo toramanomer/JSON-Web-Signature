@@ -10,15 +10,16 @@ import {
 import { base64UrlEncode } from '@/encoding/base64url'
 import { createSignature } from '@/crypto/sign'
 
+import { isObject } from '@/validation/common/isObject'
 import { isDisjoint } from '@/validation/common/isDisjoint'
 import { isJsonObject } from '@/validation/common/isJsonObject'
+
 import { validateJku } from '@/validation/jws/validateJku'
 import { validateJwk } from '@/validation/jws/validateJwk'
 import { validateKid } from '@/validation/jws/validateKid'
 import { validateTyp } from '@/validation/jws/validateTyp'
 import { validateCty } from '@/validation/jws/validateCty'
 import { validateCrit } from '@/validation/jws/validateCrit'
-
 /**
  * Options for creating a JWS with flattened JSON serialization
  */
@@ -85,11 +86,13 @@ export interface CreateFlattenedJwsInput {
 }
 
 export const createFlattenedJws = (input: CreateFlattenedJwsInput) => {
-	if (!isJsonObject(input)) throw new TypeError('Argument must be an object')
+	if (!isObject(input))
+		throw new TypeError('The "input" argument must be of type object')
 
 	const { key, payload, protectedHeader, unprotectedHeader } = input
 
-	if (!isKeyObject(key)) throw new TypeError('key must be a KeyObject')
+	if (!isKeyObject(key))
+		throw new TypeError('The provided key must be an instance of KeyObject')
 
 	// Validate payload
 	if (!Buffer.isBuffer(payload))

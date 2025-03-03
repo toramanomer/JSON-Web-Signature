@@ -3,7 +3,7 @@ import {
 	createFlattenedJws,
 	type CreateFlattenedJwsInput
 } from '@/serialization/flattened/createJws'
-import { isJsonObject } from '@/validation/common/isJsonObject'
+import { isObject } from '@/validation/common/isObject'
 
 /**
  * Options for creating a JWS with compact serialization
@@ -22,7 +22,9 @@ export interface CreateCompactJwsInput
 }
 
 export const createCompactJws = (input: CreateCompactJwsInput): string => {
-	if (!isJsonObject(input)) throw new TypeError('Input must be an object')
+	if (!isObject(input))
+		throw new TypeError('The "input" argument must be of type object')
+
 	const { payload, protectedHeader, key } = input
 	const {
 		protected: encodedHeader,
