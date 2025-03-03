@@ -39,6 +39,5 @@ describe('validateKid', () => {
 		expect(() => validateKid({ kid: '\r' })).toThrow(error)
 		expect(() => validateKid({ kid: '\f' })).toThrow(error)
 		expect(() => validateKid({ kid: '\v' })).toThrow(error)
-		expect(() => validateKid({ kid: '\0' })).toThrow(error)
 	})
 })

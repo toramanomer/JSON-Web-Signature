@@ -74,6 +74,13 @@ const validateNoPrivateParams = (jwk: Record<string, unknown>) => {
 }
 
 const validateKeyTypeForAlg = (kty: string, alg: Algorithm) => {
+	if (!['RSA', 'EC'].includes(kty))
+		throw new InvalidJWSHeaderParam(
+			`Invalid key type. Must be one of: RSA, EC`,
+			'jwk',
+			'JWK_INVALID_KTY'
+		)
+
 	// RSA algorithms
 	if (['RS256', 'RS384', 'RS512', 'PS256', 'PS384', 'PS512'].includes(alg)) {
 		if (kty !== 'RSA')
@@ -95,25 +102,13 @@ const validateKeyTypeForAlg = (kty: string, alg: Algorithm) => {
 			)
 		return
 	}
-
-	// HMAC algorithms
-	if (['HS256', 'HS384', 'HS512'].includes(alg)) {
-		if (kty !== 'oct')
-			throw new InvalidJWSHeaderParam(
-				`Algorithm ${alg} requires an oct key (kty: "oct"), but got "${kty}"`,
-				'jwk',
-				'JWK_WRONG_KEY_TYPE_FOR_ALG'
-			)
-		return
-	}
 }
 
-export const validateJwk = ({
-	jwk,
-	alg
-}: Pick<JWSHeaderParameters, 'jwk' | 'alg'>) => {
-	if (!jwk) return
-	if (!alg) return
+export const validateJwk = (
+	header: Pick<JWSHeaderParameters, 'jwk' | 'alg'>
+) => {
+	if (!('jwk' in header)) return
+	const { jwk, alg } = header
 
 	if (!isJsonObject(jwk))
 		throw new InvalidJWSHeaderParam(
@@ -133,11 +128,8 @@ export const validateJwk = ({
 	validateKeyTypeForAlg(jwk.kty, alg)
 
 	// Validate key based on type
-	if (jwk.kty === 'EC') {
-		validateECKey(jwk)
-	} else if (jwk.kty === 'RSA') {
-		validateRSAKey(jwk)
-	}
+	if (jwk.kty === 'EC') validateECKey(jwk)
+	else if (jwk.kty === 'RSA') validateRSAKey(jwk)
 
 	// Ensure no private key parameters are included
 	validateNoPrivateParams(jwk)
