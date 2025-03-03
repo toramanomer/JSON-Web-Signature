@@ -122,7 +122,7 @@ export const createFlattenedJws = (input: CreateFlattenedJwsInput) => {
 	validateJwk(joseHeader as Pick<JWSHeaderParameters, 'jwk' | 'alg'>)
 	validateKid(joseHeader.kid)
 	validateTyp(joseHeader)
-	validateCty(joseHeader.cty)
+	validateCty(joseHeader)
 	validateCrit({ protectedHeader, unprotectedHeader })
 
 	const encodedPayload = base64UrlEncode(payload)
