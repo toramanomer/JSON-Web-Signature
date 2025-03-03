@@ -23,16 +23,16 @@ export function validateCrit({
 	protectedHeader?: JWSProtectedHeader
 	unprotectedHeader?: JWSUnprotectedHeader
 }) {
-	if (unprotectedHeader?.crit)
+	if (!!unprotectedHeader && 'crit' in unprotectedHeader)
 		throw new InvalidJWSHeaderParam(
 			'The "crit" header parameter must not be in the unprotected header',
 			'crit',
 			'CRIT_IN_UNPROTECTED'
 		)
 
-	const crit = protectedHeader?.crit
+	if (!!protectedHeader && !('crit' in protectedHeader)) return
 
-	if (!crit) return
+	const crit = protectedHeader?.crit
 
 	// Must be an array
 	if (!Array.isArray(crit))
