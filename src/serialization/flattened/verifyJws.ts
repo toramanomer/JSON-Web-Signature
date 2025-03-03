@@ -135,7 +135,7 @@ export function verifyFlattenedJws({
 			validateJku(joseHeader.jku)
 			validateJwk(joseHeader as Pick<JWSHeaderParameters, 'jwk' | 'alg'>)
 			validateKid(joseHeader.kid)
-			validateTyp(joseHeader.typ)
+			validateTyp(joseHeader)
 			validateCty(joseHeader.cty)
 			validateCrit({ protectedHeader, unprotectedHeader: header })
 		} catch (error) {
