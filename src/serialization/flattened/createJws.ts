@@ -14,12 +14,14 @@ import { isObject } from '@/validation/common/isObject'
 import { isDisjoint } from '@/validation/common/isDisjoint'
 import { isJsonObject } from '@/validation/common/isJsonObject'
 
+import { validateAlg } from '@/validation/jws/validateAlg'
 import { validateJku } from '@/validation/jws/validateJku'
 import { validateJwk } from '@/validation/jws/validateJwk'
 import { validateKid } from '@/validation/jws/validateKid'
 import { validateTyp } from '@/validation/jws/validateTyp'
 import { validateCty } from '@/validation/jws/validateCty'
 import { validateCrit } from '@/validation/jws/validateCrit'
+
 /**
  * Options for creating a JWS with flattened JSON serialization
  */
@@ -119,10 +121,9 @@ export const createFlattenedJws = (input: CreateFlattenedJwsInput) => {
 
 	const joseHeader = { ...protectedHeader, ...unprotectedHeader }
 
-	if (!joseHeader.alg) throw new Error('algorithm is missing')
-
+	validateAlg(joseHeader)
 	validateJku(joseHeader)
-	validateJwk(joseHeader as Pick<JWSHeaderParameters, 'jwk' | 'alg'>)
+	validateJwk(joseHeader)
 	validateKid(joseHeader)
 	validateTyp(joseHeader)
 	validateCty(joseHeader)
