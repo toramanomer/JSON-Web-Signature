@@ -22,7 +22,7 @@ describe('verifyRsaPss', () => {
 
 				expect(() =>
 					verifyRsaPss({ algorithm, key, signature, signingInput })
-				).toThrow(InvalidKeyError)
+				).toThrow(InvalidKeyError.invalidType(algorithm, 'public'))
 			}
 		)
 
@@ -36,7 +36,7 @@ describe('verifyRsaPss', () => {
 
 				expect(() =>
 					verifyRsaPss({ algorithm, key, signature, signingInput })
-				).toThrow(InvalidKeyError)
+				).toThrow(InvalidKeyError.invalidType(algorithm, 'public'))
 			}
 		)
 
@@ -50,7 +50,12 @@ describe('verifyRsaPss', () => {
 
 				expect(() =>
 					verifyRsaPss({ algorithm, key, signature, signingInput })
-				).toThrow(InvalidKeyError)
+				).toThrow(
+					InvalidKeyError.invalidAsymmetricKeyType(
+						algorithm,
+						'rsa-pss'
+					)
+				)
 			}
 		)
 
@@ -64,7 +69,7 @@ describe('verifyRsaPss', () => {
 
 				expect(() =>
 					verifyRsaPss({ algorithm, key, signature, signingInput })
-				).toThrow(InvalidKeyError)
+				).toThrow(InvalidKeyError.invalidSize(algorithm, 2048 / 8))
 			}
 		)
 	})
