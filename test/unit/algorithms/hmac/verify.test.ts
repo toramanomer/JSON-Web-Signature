@@ -3,14 +3,12 @@ import { describe, it, expect } from 'vitest'
 
 import { verifyHmac } from '../../../../src/algorithms/hmac/verify'
 import { InvalidKeyError } from '../../../../src/algorithms/InvalidKeyError'
-import {
-	hmacParams,
-	type HmacAlgorithm
-} from '../../../../src/algorithms/hmac/params'
+import { hmacParams } from '../../../../src/algorithms/hmac/params'
+import { keys } from '../../../../src/utils/object'
 
 describe('verifyHmac', () => {
 	describe('When using invalid key', () => {
-		const algorithms = Object.keys(hmacParams) as HmacAlgorithm[]
+		const algorithms = keys(hmacParams)
 		const signature = Buffer.from('dummy-signature')
 		const signingInput = 'test'
 

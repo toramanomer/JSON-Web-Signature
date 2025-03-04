@@ -3,16 +3,14 @@ import { describe, it, expect } from 'vitest'
 
 import { signRsaPss } from '../../../../src/algorithms/rsa-pss/sign'
 import { InvalidKeyError } from '../../../../src/algorithms/InvalidKeyError'
-import {
-	rsaPssParams,
-	type RsaPssAlgorithm
-} from '../../../../src/algorithms/rsa-pss/params'
+import { rsaPssParams } from '../../../../src/algorithms/rsa-pss/params'
+import { keys } from '../../../../src/utils/object'
 
 const signingInput = 'test'
 
 describe('signRsaPss', () => {
 	describe('When using invalid key', () => {
-		const algorithms = Object.keys(rsaPssParams) as RsaPssAlgorithm[]
+		const algorithms = keys(rsaPssParams)
 
 		// Secret key
 		it.for(algorithms)(

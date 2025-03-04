@@ -3,14 +3,12 @@ import { describe, it, expect } from 'vitest'
 
 import { verifyEcdsa } from '../../../../src/algorithms/ecdsa/verify'
 import { InvalidKeyError } from '../../../../src/algorithms/InvalidKeyError'
-import {
-	ecdsaParams,
-	type EcdsaAlgorithm
-} from '../../../../src/algorithms/ecdsa/params'
+import { ecdsaParams } from '../../../../src/algorithms/ecdsa/params'
+import { keys } from '../../../../src/utils/object'
 
 describe('verifyEcdsa', () => {
 	describe('When using invalid key', () => {
-		const algorithms = Object.keys(ecdsaParams) as EcdsaAlgorithm[]
+		const algorithms = keys(ecdsaParams)
 		const signature = Buffer.from('dummy-signature')
 		const signingInput = 'test'
 
