@@ -24,7 +24,7 @@ describe('signHmac', () => {
 
 				expect(() =>
 					signHmac({ algorithm, key, signingInput })
-				).toThrow(InvalidKeyError)
+				).toThrow(InvalidKeyError.invalidType(algorithm, 'secret'))
 			}
 		)
 
@@ -38,7 +38,7 @@ describe('signHmac', () => {
 
 				expect(() =>
 					signHmac({ algorithm, key, signingInput })
-				).toThrow(InvalidKeyError)
+				).toThrow(InvalidKeyError.invalidType(algorithm, 'secret'))
 			}
 		)
 
@@ -53,7 +53,7 @@ describe('signHmac', () => {
 
 				expect(() =>
 					signHmac({ algorithm, key, signingInput })
-				).toThrow(InvalidKeyError)
+				).toThrow(InvalidKeyError.invalidSize(algorithm, minBytes))
 			}
 		)
 	})
