@@ -1,39 +1,24 @@
-import { createVerify, KeyObject } from 'node:crypto'
-import { EcdsaAlgorithm, ecdsaParams } from './params'
+import { createVerify, type KeyObject } from 'node:crypto'
+
+import { ecdsaParams, type EcdsaAlgorithm } from './params'
+import { validateEcdsaKey } from './validateKey'
 
 interface VerifyEcdsaInput {
-	key: KeyObject
 	algorithm: EcdsaAlgorithm
-	signingInput: string
+	key: KeyObject
 	signature: Buffer
+	signingInput: string
 }
 
 export const verifyEcdsa = ({
-	key,
 	algorithm,
-	signingInput,
-	signature
+	key,
+	signature,
+	signingInput
 }: VerifyEcdsaInput): boolean => {
-	const {
-		hashAlg,
-		namedCurve,
-		verifyKeyType,
-		asymmetricKeyType,
-		signatureBytes
-	} = ecdsaParams[algorithm]
+	validateEcdsaKey({ algorithm, key, usage: 'verify' })
 
-	if (key.type !== verifyKeyType)
-		throw new Error(
-			`Invalid key type for ${algorithm}. Expected "${verifyKeyType}", got "${key.type}".`
-		)
-
-	if (key.asymmetricKeyType !== asymmetricKeyType)
-		throw new Error(
-			`Invalid key type for ${algorithm}. Expected "${asymmetricKeyType}", got "${key.asymmetricKeyType}".`
-		)
-
-	if (key.asymmetricKeyDetails?.namedCurve !== namedCurve)
-		throw new Error(`Invalid curve for ${algorithm}.`)
+	const { hashAlg, signatureBytes } = ecdsaParams[algorithm]
 
 	if (signature.length !== signatureBytes)
 		throw new Error(`Signature is not 64 bytes`)

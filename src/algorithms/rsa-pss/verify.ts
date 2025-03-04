@@ -1,39 +1,24 @@
-import { constants, createVerify, KeyObject } from 'node:crypto'
+import { constants, createVerify, type KeyObject } from 'node:crypto'
 
-import { RsaPssAlgorithm, rsaPssParams } from './params'
+import { rsaPssParams, type RsaPssAlgorithm } from './params'
+import { validateRsaPssKey } from './validateKey'
 
 interface VerifyRsaPssInput {
-	key: KeyObject
 	algorithm: RsaPssAlgorithm
-	signingInput: string
+	key: KeyObject
 	signature: Buffer
+	signingInput: string
 }
 
 export const verifyRsaPss = ({
-	key,
 	algorithm,
-	signingInput,
-	signature
+	key,
+	signature,
+	signingInput
 }: VerifyRsaPssInput): boolean => {
-	const { hashAlg, minKeyBits, verifyKeyType, asymmetricKeyType } =
-		rsaPssParams[algorithm]
+	validateRsaPssKey({ algorithm, key, usage: 'verify' })
 
-	if (key.type !== verifyKeyType)
-		throw new Error(
-			`Invalid key type for ${algorithm}. Expected "${verifyKeyType}", got "${key.type}".`
-		)
-
-	if (key.asymmetricKeyType !== asymmetricKeyType)
-		throw new Error(
-			`Invalid key type for ${algorithm}. Expected "${asymmetricKeyType}", got "${key.asymmetricKeyType}".`
-		)
-
-	const keySizeInBits = key.asymmetricKeyDetails?.modulusLength
-	if (!keySizeInBits || keySizeInBits < minKeyBits) {
-		throw new Error(
-			`Key size for ${algorithm} is too small. Expected at least ${minKeyBits} bits, got ${keySizeInBits} bits.`
-		)
-	}
+	const { hashAlg } = rsaPssParams[algorithm]
 
 	return createVerify(hashAlg)
 		.update(signingInput)

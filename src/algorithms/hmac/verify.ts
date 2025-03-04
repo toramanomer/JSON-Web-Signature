@@ -1,30 +1,24 @@
-import { createHmac, KeyObject, timingSafeEqual } from 'node:crypto'
-import { HmacAlgorithm, hmacParams } from './params'
+import { createHmac, timingSafeEqual, type KeyObject } from 'node:crypto'
+
+import { hmacParams, type HmacAlgorithm } from './params'
+import { validateHmacKey } from './validateKey'
 
 interface VerifyHmacInput {
-	key: KeyObject
 	algorithm: HmacAlgorithm
-	signingInput: string
+	key: KeyObject
 	signature: Buffer
+	signingInput: string
 }
 
 export const verifyHmac = ({
-	key,
 	algorithm,
-	signingInput,
-	signature
+	key,
+	signature,
+	signingInput
 }: VerifyHmacInput): boolean => {
-	const { hashAlg, type, minKeyBytes } = hmacParams[algorithm]
+	validateHmacKey({ key, algorithm })
 
-	if (key.type !== type)
-		throw new Error(
-			`Invalid key type for ${algorithm}. Expected "${type}", got "${key.type}".`
-		)
-
-	if (!key.symmetricKeySize || key.symmetricKeySize < minKeyBytes)
-		throw new Error(
-			`Key is too short for ${algorithm}. Expected at least ${minKeyBytes} bytes, got ${key.symmetricKeySize} bytes.`
-		)
+	const { hashAlg } = hmacParams[algorithm]
 
 	const expectedSignature = createHmac(hashAlg, key)
 		.update(signingInput)

@@ -1,36 +1,22 @@
-import { constants, createSign, KeyObject } from 'node:crypto'
-import { RsaPssAlgorithm, rsaPssParams } from './params'
+import { constants, createSign, type KeyObject } from 'node:crypto'
+
+import { rsaPssParams, type RsaPssAlgorithm } from './params'
+import { validateRsaPssKey } from './validateKey'
 
 interface SignRsaPssInput {
-	key: KeyObject
 	algorithm: RsaPssAlgorithm
+	key: KeyObject
 	signingInput: string
 }
 
 export const signRsaPss = ({
-	key,
 	algorithm,
+	key,
 	signingInput
 }: SignRsaPssInput): Buffer => {
-	const { hashAlg, minKeyBits, signKeyType, asymmetricKeyType } =
-		rsaPssParams[algorithm]
+	validateRsaPssKey({ algorithm, key, usage: 'sign' })
 
-	if (key.type !== signKeyType)
-		throw new Error(
-			`Invalid key type for ${algorithm}. Expected "${signKeyType}", got "${key.type}".`
-		)
-
-	if (key.asymmetricKeyType !== asymmetricKeyType)
-		throw new Error(
-			`Invalid key type for ${algorithm}. Expected "${asymmetricKeyType}", got "${key.asymmetricKeyType}".`
-		)
-
-	const keySizeInBits = key.asymmetricKeyDetails?.modulusLength
-	if (!keySizeInBits || keySizeInBits < minKeyBits) {
-		throw new Error(
-			`Key size for ${algorithm} is too small. Expected at least ${minKeyBits} bits, got ${keySizeInBits} bits.`
-		)
-	}
+	const { hashAlg } = rsaPssParams[algorithm]
 
 	return createSign(hashAlg)
 		.update(signingInput)

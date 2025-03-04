@@ -1,32 +1,22 @@
-import { createSign, KeyObject } from 'node:crypto'
+import { createSign, type KeyObject } from 'node:crypto'
+
 import { EcdsaAlgorithm, ecdsaParams } from './params'
+import { validateEcdsaKey } from './validateKey'
 
 interface SignEcdsaInput {
-	key: KeyObject
 	algorithm: EcdsaAlgorithm
+	key: KeyObject
 	signingInput: string
 }
 
 export const signEcdsa = ({
-	key,
 	algorithm,
+	key,
 	signingInput
 }: SignEcdsaInput): Buffer => {
-	const { hashAlg, namedCurve, signKeyType, asymmetricKeyType } =
-		ecdsaParams[algorithm]
+	validateEcdsaKey({ algorithm, key, usage: 'sign' })
 
-	if (key.type !== signKeyType)
-		throw new Error(
-			`Invalid key type for ${algorithm}. Expected "${signKeyType}", got "${key.type}".`
-		)
-
-	if (key.asymmetricKeyType !== asymmetricKeyType)
-		throw new Error(
-			`Invalid key type for ${algorithm}. Expected "${asymmetricKeyType}", got "${key.asymmetricKeyType}".`
-		)
-
-	if (key.asymmetricKeyDetails?.namedCurve !== namedCurve)
-		throw new Error(`Invalid curve for ${algorithm}.`)
+	const { hashAlg } = ecdsaParams[algorithm]
 
 	return createSign(hashAlg).update(signingInput).sign(key)
 }

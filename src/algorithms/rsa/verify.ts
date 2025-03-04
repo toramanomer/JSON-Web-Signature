@@ -1,38 +1,24 @@
-import { createVerify, KeyObject } from 'node:crypto'
-import { RsaAlgorithm, rsaParams } from './params'
+import { createVerify, type KeyObject } from 'node:crypto'
+
+import { rsaParams, type RsaAlgorithm } from './params'
+import { validateRsaKey } from './validateKey'
 
 interface VerifyRsaInput {
-	key: KeyObject
 	algorithm: RsaAlgorithm
-	signingInput: string
+	key: KeyObject
 	signature: Buffer
+	signingInput: string
 }
 
 export const verifyRsa = ({
-	key,
 	algorithm,
-	signingInput,
-	signature
+	key,
+	signature,
+	signingInput
 }: VerifyRsaInput): boolean => {
-	const { asymmetricKeyType, hashAlg, minKeyBits, verifyKeyType } =
-		rsaParams[algorithm]
+	validateRsaKey({ algorithm, key, usage: 'verify' })
 
-	if (key.type !== verifyKeyType)
-		throw new Error(
-			`Invalid key type for ${algorithm}. Expected "${verifyKeyType}", got "${key.type}".`
-		)
-
-	if (key.asymmetricKeyType !== asymmetricKeyType)
-		throw new Error(
-			`Invalid key type for ${algorithm}. Expected "${asymmetricKeyType}", got "${key.asymmetricKeyType}".`
-		)
-
-	const keySizeInBits = key.asymmetricKeyDetails?.modulusLength
-	if (!keySizeInBits || keySizeInBits < minKeyBits) {
-		throw new Error(
-			`Key size for ${algorithm} is too small. Expected at least ${minKeyBits} bits, got ${keySizeInBits} bits.`
-		)
-	}
+	const { hashAlg } = rsaParams[algorithm]
 
 	return createVerify(hashAlg).update(signingInput).verify(key, signature)
 }
