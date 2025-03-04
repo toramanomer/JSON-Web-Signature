@@ -22,7 +22,7 @@ describe('signRsaPss', () => {
 
 				expect(() =>
 					signRsaPss({ algorithm, key, signingInput })
-				).toThrow(InvalidKeyError)
+				).toThrow(InvalidKeyError.invalidType(algorithm, 'private'))
 			}
 		)
 
@@ -50,7 +50,12 @@ describe('signRsaPss', () => {
 
 				expect(() =>
 					signRsaPss({ algorithm, key, signingInput })
-				).toThrow(InvalidKeyError)
+				).toThrow(
+					InvalidKeyError.invalidAsymmetricKeyType(
+						algorithm,
+						'rsa-pss'
+					)
+				)
 			}
 		)
 
@@ -64,7 +69,7 @@ describe('signRsaPss', () => {
 
 				expect(() =>
 					signRsaPss({ algorithm, key, signingInput })
-				).toThrow(InvalidKeyError)
+				).toThrow(InvalidKeyError.invalidSize(algorithm, 2048 / 8))
 			}
 		)
 	})
