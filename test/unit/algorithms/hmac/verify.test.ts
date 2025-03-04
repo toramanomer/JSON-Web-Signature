@@ -24,7 +24,7 @@ describe('verifyHmac', () => {
 
 				expect(() =>
 					verifyHmac({ algorithm, key, signature, signingInput })
-				).toThrow(InvalidKeyError)
+				).toThrow(InvalidKeyError.invalidType(algorithm, 'secret'))
 			}
 		)
 
@@ -38,7 +38,7 @@ describe('verifyHmac', () => {
 
 				expect(() =>
 					verifyHmac({ algorithm, key, signature, signingInput })
-				).toThrow(InvalidKeyError)
+				).toThrow(InvalidKeyError.invalidType(algorithm, 'secret'))
 			}
 		)
 
@@ -48,12 +48,12 @@ describe('verifyHmac', () => {
 			algorithm => {
 				const minBytes = hmacParams[algorithm].minKeyBytes
 				const key = generateKeySync('hmac', {
-					length: (minBytes - 1) * 8
+					length: minBytes * 8 - 1
 				})
 
 				expect(() =>
 					verifyHmac({ algorithm, key, signature, signingInput })
-				).toThrow(InvalidKeyError)
+				).toThrow(InvalidKeyError.invalidSize(algorithm, minBytes))
 			}
 		)
 	})
