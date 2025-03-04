@@ -21,7 +21,7 @@ describe('signRsa', () => {
 				const key = generateKeySync('hmac', { length: 256 })
 
 				expect(() => signRsa({ algorithm, key, signingInput })).toThrow(
-					InvalidKeyError
+					InvalidKeyError.invalidType(algorithm, 'private')
 				)
 			}
 		)
@@ -35,7 +35,7 @@ describe('signRsa', () => {
 				})
 
 				expect(() => signRsa({ algorithm, key, signingInput })).toThrow(
-					InvalidKeyError
+					InvalidKeyError.invalidType(algorithm, 'private')
 				)
 			}
 		)
@@ -49,7 +49,7 @@ describe('signRsa', () => {
 				})
 
 				expect(() => signRsa({ algorithm, key, signingInput })).toThrow(
-					InvalidKeyError
+					InvalidKeyError.invalidAsymmetricKeyType(algorithm, 'rsa')
 				)
 			}
 		)
@@ -63,7 +63,7 @@ describe('signRsa', () => {
 				})
 
 				expect(() => signRsa({ algorithm, key, signingInput })).toThrow(
-					InvalidKeyError
+					InvalidKeyError.invalidSize(algorithm, 2048 / 8)
 				)
 			}
 		)
