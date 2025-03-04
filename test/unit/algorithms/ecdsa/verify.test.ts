@@ -22,7 +22,7 @@ describe('verifyEcdsa', () => {
 
 				expect(() =>
 					verifyEcdsa({ algorithm, key, signature, signingInput })
-				).toThrow(InvalidKeyError)
+				).toThrow(InvalidKeyError.invalidType(algorithm, 'public'))
 			}
 		)
 
@@ -36,7 +36,7 @@ describe('verifyEcdsa', () => {
 
 				expect(() =>
 					verifyEcdsa({ algorithm, key, signature, signingInput })
-				).toThrow(InvalidKeyError)
+				).toThrow(InvalidKeyError.invalidType(algorithm, 'public'))
 			}
 		)
 
@@ -50,7 +50,9 @@ describe('verifyEcdsa', () => {
 
 				expect(() =>
 					verifyEcdsa({ algorithm, key, signature, signingInput })
-				).toThrow(InvalidKeyError)
+				).toThrow(
+					InvalidKeyError.invalidAsymmetricKeyType(algorithm, 'ec')
+				)
 			}
 		)
 
@@ -70,7 +72,7 @@ describe('verifyEcdsa', () => {
 
 				expect(() =>
 					verifyEcdsa({ algorithm, key, signature, signingInput })
-				).toThrow(InvalidKeyError)
+				).toThrow(InvalidKeyError.invalidCurve(algorithm))
 			}
 		)
 	})
