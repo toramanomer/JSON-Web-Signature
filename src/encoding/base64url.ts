@@ -6,3 +6,6 @@ export const base64UrlEncode = (data: Buffer | string) => {
 }
 
 export const base64UrlDecode = (str: string) => Buffer.from(str, 'base64url')
+
+export const isBase64url = (str: string) =>
+	str === base64UrlEncode(base64UrlDecode(str))
