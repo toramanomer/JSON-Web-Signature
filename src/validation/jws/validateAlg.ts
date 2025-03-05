@@ -1,6 +1,7 @@
-import { JWSHeaderParameters } from '@/types/jws'
-import { algorithms } from '@/algorithms/algorithms'
-import { InvalidJWSHeaderParam } from './InvalidJWSHeaderParam'
+import { algorithms } from '@/algorithms/algorithms.js'
+import type { JWSHeaderParameters } from '@/types/jws.js'
+
+import { InvalidJWSHeaderParam } from './InvalidJWSHeaderParam.js'
 
 export function validateAlg(
 	header: Partial<JWSHeaderParameters>

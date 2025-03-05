@@ -1,7 +1,7 @@
 import type { KeyObject } from 'node:crypto'
 
-import { rsaParams, type RsaAlgorithm } from './params'
-import { InvalidKeyError } from '../InvalidKeyError'
+import { InvalidKeyError } from '../InvalidKeyError.js'
+import { rsaParams, type RsaAlgorithm } from './params.js'
 
 interface ValidateRsaKeyInput {
 	algorithm: RsaAlgorithm

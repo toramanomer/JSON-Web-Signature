@@ -1,12 +1,12 @@
 import type { Buffer } from 'node:buffer'
 import type { KeyObject } from 'node:crypto'
 
-import { type Algorithm } from '@/algorithms/algorithms'
+import type { Algorithm } from '@/algorithms/algorithms.js'
 
-import { verifyHmac } from '@/algorithms/hmac/verify'
-import { verifyRsa } from '@/algorithms/rsa/verify'
-import { verifyEcdsa } from '@/algorithms/ecdsa/verify'
-import { verifyRsaPss } from '@/algorithms/rsa-pss/verify'
+import { verifyHmac } from '@/algorithms/hmac/verify.js'
+import { verifyRsa } from '@/algorithms/rsa/verify.js'
+import { verifyEcdsa } from '@/algorithms/ecdsa/verify.js'
+import { verifyRsaPss } from '@/algorithms/rsa-pss/verify.js'
 
 export const verifySignature = (
 	signingInput: string,

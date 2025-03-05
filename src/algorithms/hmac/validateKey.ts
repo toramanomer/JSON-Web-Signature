@@ -1,7 +1,7 @@
 import type { KeyObject } from 'node:crypto'
 
-import { hmacParams, type HmacAlgorithm } from './params'
-import { InvalidKeyError } from '../InvalidKeyError'
+import { InvalidKeyError } from '../InvalidKeyError.js'
+import { hmacParams, type HmacAlgorithm } from './params.js'
 
 interface ValidateHmacKeyInput {
 	algorithm: HmacAlgorithm

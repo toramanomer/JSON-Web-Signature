@@ -1,7 +1,7 @@
 import { createSign, type KeyObject } from 'node:crypto'
 
-import { EcdsaAlgorithm, ecdsaParams } from './params'
-import { validateEcdsaKey } from './validateKey'
+import { ecdsaParams, type EcdsaAlgorithm } from './params.js'
+import { validateEcdsaKey } from './validateKey.js'
 
 interface SignEcdsaInput {
 	algorithm: EcdsaAlgorithm

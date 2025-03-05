@@ -1,7 +1,7 @@
 import { constants, createVerify, type KeyObject } from 'node:crypto'
 
-import { rsaPssParams, type RsaPssAlgorithm } from './params'
-import { validateRsaPssKey } from './validateKey'
+import { rsaPssParams, type RsaPssAlgorithm } from './params.js'
+import { validateRsaPssKey } from './validateKey.js'
 
 interface VerifyRsaPssInput {
 	algorithm: RsaPssAlgorithm

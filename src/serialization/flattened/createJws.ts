@@ -2,25 +2,21 @@ import type { KeyObject } from 'node:crypto'
 import { Buffer } from 'node:buffer'
 import { isKeyObject } from 'node:util/types'
 
-import {
-	JWSProtectedHeader,
-	JWSUnprotectedHeader,
-	type JWSHeaderParameters
-} from '@/types/jws'
-import { base64UrlEncode } from '@/encoding/base64url'
-import { createSignature } from '@/crypto/sign'
+import type { JWSProtectedHeader, JWSUnprotectedHeader } from '@/types/jws.js'
+import { base64UrlEncode } from '@/encoding/base64url.js'
+import { createSignature } from '@/crypto/sign.js'
 
-import { isObject } from '@/validation/common/isObject'
-import { isDisjoint } from '@/validation/common/isDisjoint'
-import { isJsonObject } from '@/validation/common/isJsonObject'
+import { isObject } from '@/validation/common/isObject.js'
+import { isDisjoint } from '@/validation/common/isDisjoint.js'
+import { isJsonObject } from '@/validation/common/isJsonObject.js'
 
-import { validateAlg } from '@/validation/jws/validateAlg'
-import { validateJku } from '@/validation/jws/validateJku'
-import { validateJwk } from '@/validation/jws/validateJwk'
-import { validateKid } from '@/validation/jws/validateKid'
-import { validateTyp } from '@/validation/jws/validateTyp'
-import { validateCty } from '@/validation/jws/validateCty'
-import { validateCrit } from '@/validation/jws/validateCrit'
+import { validateAlg } from '@/validation/jws/validateAlg.js'
+import { validateJku } from '@/validation/jws/validateJku.js'
+import { validateJwk } from '@/validation/jws/validateJwk.js'
+import { validateKid } from '@/validation/jws/validateKid.js'
+import { validateTyp } from '@/validation/jws/validateTyp.js'
+import { validateCty } from '@/validation/jws/validateCty.js'
+import { validateCrit } from '@/validation/jws/validateCrit.js'
 
 /**
  * Options for creating a JWS with flattened JSON serialization

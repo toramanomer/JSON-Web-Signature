@@ -1,8 +1,8 @@
-import { type Algorithm } from '@/algorithms/algorithms'
-import { JWSHeaderParameters } from '@/types/jws'
-import { isString } from '../common/isString'
-import { isJsonObject } from '../common/isJsonObject'
-import { InvalidJWSHeaderParam } from './InvalidJWSHeaderParam'
+import type { Algorithm } from '@/algorithms/algorithms.js'
+import type { JWSHeaderParameters } from '@/types/jws.js'
+import { isString } from '../common/isString.js'
+import { isJsonObject } from '../common/isJsonObject.js'
+import { InvalidJWSHeaderParam } from './InvalidJWSHeaderParam.js'
 
 const ALLOWED_EC_CURVES = ['P-256', 'P-384', 'P-521'] as const
 
@@ -104,9 +104,7 @@ const validateKeyTypeForAlg = (kty: string, alg: Algorithm) => {
 	}
 }
 
-export const validateJwk = (
-	header: Pick<JWSHeaderParameters, 'jwk' | 'alg'>
-) => {
+export const validateJwk = (header: JWSHeaderParameters) => {
 	if (!('jwk' in header)) return
 	const { jwk, alg } = header
 

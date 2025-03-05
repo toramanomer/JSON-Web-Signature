@@ -1,5 +1,5 @@
 import type { KeyObjectType, KeyType } from 'node:crypto'
-import type { Algorithm } from './algorithms'
+import type { Algorithm } from './algorithms.js'
 
 const invalidKeyCodes = {
 	INVALID_KEY_TYPE: 'INVALID_KEY_TYPE',

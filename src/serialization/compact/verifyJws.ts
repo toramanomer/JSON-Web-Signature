@@ -1,7 +1,8 @@
-import { KeyObject } from 'node:crypto'
-import { type Algorithm } from '@/algorithms/algorithms'
-import { verifyFlattenedJws } from '@/serialization/flattened/verifyJws'
-import { isObject } from '@/validation/common/isObject'
+import type { KeyObject } from 'node:crypto'
+
+import type { Algorithm } from '@/algorithms/algorithms.js'
+import { verifyFlattenedJws } from '@/serialization/flattened/verifyJws.js'
+import { isObject } from '@/validation/common/isObject.js'
 
 export interface VerifyJWSOptions {
 	/**

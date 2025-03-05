@@ -1,6 +1,6 @@
-import type { JWSProtectedHeader, JWSUnprotectedHeader } from '@/types/jws'
-import { isString } from '../common/isString'
-import { InvalidJWSHeaderParam } from './InvalidJWSHeaderParam'
+import type { JWSProtectedHeader, JWSUnprotectedHeader } from '@/types/jws.js'
+import { isString } from '../common/isString.js'
+import { InvalidJWSHeaderParam } from './InvalidJWSHeaderParam.js'
 
 const REGISTERED_HEADER_PARAMETERS = new Set([
 	'alg',

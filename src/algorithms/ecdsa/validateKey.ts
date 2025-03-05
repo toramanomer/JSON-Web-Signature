@@ -1,7 +1,7 @@
 import type { KeyObject } from 'node:crypto'
 
-import { ecdsaParams, type EcdsaAlgorithm } from './params'
-import { InvalidKeyError } from '../InvalidKeyError'
+import { InvalidKeyError } from '../InvalidKeyError.js'
+import { ecdsaParams, type EcdsaAlgorithm } from './params.js'
 
 interface ValidateEcdsaKeyInput {
 	algorithm: EcdsaAlgorithm

@@ -1,14 +1,14 @@
-import { hmacParams } from './hmac/params'
-import { rsaParams } from './rsa/params'
-import { ecdsaParams } from './ecdsa/params'
-import { rsaPssParams } from './rsa-pss/params'
+import { ecdsaParams } from './ecdsa/params.js'
+import { hmacParams } from './hmac/params.js'
+import { rsaParams } from './rsa/params.js'
+import { rsaPssParams } from './rsa-pss/params.js'
 
-import { keys } from '../utils/object'
+import { keys } from '../utils/object.js'
 
 export const algorithms = Object.freeze([
+	...keys(ecdsaParams),
 	...keys(hmacParams),
 	...keys(rsaParams),
-	...keys(ecdsaParams),
 	...keys(rsaPssParams)
 ])
 

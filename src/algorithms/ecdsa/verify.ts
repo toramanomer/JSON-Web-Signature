@@ -1,7 +1,7 @@
 import { createVerify, type KeyObject } from 'node:crypto'
 
-import { ecdsaParams, type EcdsaAlgorithm } from './params'
-import { validateEcdsaKey } from './validateKey'
+import { ecdsaParams, type EcdsaAlgorithm } from './params.js'
+import { validateEcdsaKey } from './validateKey.js'
 
 interface VerifyEcdsaInput {
 	algorithm: EcdsaAlgorithm

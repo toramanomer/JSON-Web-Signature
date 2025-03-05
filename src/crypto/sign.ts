@@ -1,12 +1,12 @@
 import type { Buffer } from 'node:buffer'
 import type { KeyObject } from 'node:crypto'
 
-import { type Algorithm } from '@/algorithms/algorithms'
+import { type Algorithm } from '@/algorithms/algorithms.js'
 
-import { signHmac } from '@/algorithms/hmac/sign'
-import { signRsa } from '@/algorithms/rsa/sign'
-import { signEcdsa } from '@/algorithms/ecdsa/sign'
-import { signRsaPss } from '@/algorithms/rsa-pss/sign'
+import { signHmac } from '@/algorithms/hmac/sign.js'
+import { signRsa } from '@/algorithms/rsa/sign.js'
+import { signEcdsa } from '@/algorithms/ecdsa/sign.js'
+import { signRsaPss } from '@/algorithms/rsa-pss/sign.js'
 
 export const createSignature = (
 	signingInput: string,

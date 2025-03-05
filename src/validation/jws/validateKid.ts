@@ -1,6 +1,6 @@
-import { JWSHeaderParameters } from '@/types/jws'
-import { isString } from '../common/isString'
-import { InvalidJWSHeaderParam } from './InvalidJWSHeaderParam'
+import type { JWSHeaderParameters } from '@/types/jws.js'
+import { isString } from '../common/isString.js'
+import { InvalidJWSHeaderParam } from './InvalidJWSHeaderParam.js'
 
 export const validateKid = (header: JWSHeaderParameters) => {
 	if (!('kid' in header)) return

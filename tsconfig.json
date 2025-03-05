@@ -12,7 +12,8 @@
 		"skipLibCheck": true,
 		"moduleResolution": "node16",
 		"baseUrl": ".",
-		"paths": { "@/*": ["src/*"] }
+		"paths": { "@/*": ["src/*"] },
+		"verbatimModuleSyntax": true
 	},
 	"include": ["src/**/*"]
 }
