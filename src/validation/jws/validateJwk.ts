@@ -1,5 +1,5 @@
-import type { Algorithm } from '@/algorithms/algorithms.js'
-import type { JWSHeaderParameters } from '@/types/jws.js'
+import type { Algorithm } from 'src/algorithms/algorithms.js'
+import type { JWSHeaderParameters } from 'src/types/jws.js'
 import { isString } from '../common/isString.js'
 import { isJsonObject } from '../common/isJsonObject.js'
 import { InvalidJWSHeaderParam } from './InvalidJWSHeaderParam.js'

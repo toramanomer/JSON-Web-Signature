@@ -1,7 +1,7 @@
-export { createCompactJws } from '@/serialization/compact/createJws.js'
-export { verifyCompactJws } from '@/serialization/compact/verifyJws.js'
+export { createCompactJws } from 'src/serialization/compact/createJws.js'
+export { verifyCompactJws } from 'src/serialization/compact/verifyJws.js'
 
-export { createFlattenedJws } from '@/serialization/flattened/createJws.js'
-export { verifyFlattenedJws } from '@/serialization/flattened/verifyJws.js'
+export { createFlattenedJws } from 'src/serialization/flattened/createJws.js'
+export { verifyFlattenedJws } from 'src/serialization/flattened/verifyJws.js'
 
-export { createGeneralJws } from '@/serialization/general/createJws.js'
+export { createGeneralJws } from 'src/serialization/general/createJws.js'

@@ -1,9 +1,9 @@
-import type { JWSProtectedHeader } from '@/types/jws.js'
+import type { JWSProtectedHeader } from 'src/types/jws.js'
 import {
 	createFlattenedJws,
 	type CreateFlattenedJwsInput
-} from '@/serialization/flattened/createJws.js'
-import { isObject } from '@/validation/common/isObject.js'
+} from 'src/serialization/flattened/createJws.js'
+import { isObject } from 'src/validation/common/isObject.js'
 
 /**
  * Options for creating a JWS with compact serialization

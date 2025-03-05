@@ -1,5 +1,5 @@
-import { algorithms } from '@/algorithms/algorithms.js'
-import type { JWSHeaderParameters } from '@/types/jws.js'
+import { algorithms } from 'src/algorithms/algorithms.js'
+import type { JWSHeaderParameters } from 'src/types/jws.js'
 
 import { InvalidJWSHeaderParam } from './InvalidJWSHeaderParam.js'
 

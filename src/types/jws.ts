@@ -1,4 +1,4 @@
-import type { Algorithm } from '@/algorithms/algorithms.js'
+import type { Algorithm } from 'src/algorithms/algorithms.js'
 
 export interface JWSHeaderParameters {
 	/**

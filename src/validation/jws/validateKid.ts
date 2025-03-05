@@ -1,4 +1,4 @@
-import type { JWSHeaderParameters } from '@/types/jws.js'
+import type { JWSHeaderParameters } from 'src/types/jws.js'
 import { isString } from '../common/isString.js'
 import { InvalidJWSHeaderParam } from './InvalidJWSHeaderParam.js'
 

@@ -1,9 +1,9 @@
-import { base64UrlEncode } from '@/encoding/base64url.js'
+import { base64UrlEncode } from 'src/encoding/base64url.js'
 import {
 	createFlattenedJws,
 	type CreateFlattenedJwsInput
-} from '@/serialization/flattened/createJws.js'
-import { isObject } from '@/validation/common/isObject.js'
+} from 'src/serialization/flattened/createJws.js'
+import { isObject } from 'src/validation/common/isObject.js'
 
 /**
  * Options for creating a JWS with general JSON serialization
