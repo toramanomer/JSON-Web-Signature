@@ -1,21 +1,21 @@
 import { Buffer } from 'node:buffer'
 import { KeyObject } from 'node:crypto'
 
-import { Algorithm } from '@/algorithms/algorithms'
-import { JWSHeaderParameters } from '@/types/jws'
+import type { Algorithm } from '@/algorithms/algorithms.js'
+import type { JWSHeaderParameters } from '@/types/jws.js'
 
-import { verifySignature } from '@/crypto/verify'
+import { verifySignature } from '@/crypto/verify.js'
 
-import { isObject } from '@/validation/common/isObject'
-import { isDisjoint } from '@/validation/common/isDisjoint'
-import { isJsonObject } from '@/validation/common/isJsonObject'
+import { isObject } from '@/validation/common/isObject.js'
+import { isDisjoint } from '@/validation/common/isDisjoint.js'
+import { isJsonObject } from '@/validation/common/isJsonObject.js'
 
-import { validateKid } from '@/validation/jws/validateKid'
-import { validateJwk } from '@/validation/jws/validateJwk'
-import { validateJku } from '@/validation/jws/validateJku'
-import { validateTyp } from '@/validation/jws/validateTyp'
-import { validateCty } from '@/validation/jws/validateCty'
-import { validateCrit } from '@/validation/jws/validateCrit'
+import { validateKid } from '@/validation/jws/validateKid.js'
+import { validateJwk } from '@/validation/jws/validateJwk.js'
+import { validateJku } from '@/validation/jws/validateJku.js'
+import { validateTyp } from '@/validation/jws/validateTyp.js'
+import { validateCty } from '@/validation/jws/validateCty.js'
+import { validateCrit } from '@/validation/jws/validateCrit.js'
 
 export interface VerifyFlattenedJwsInput {
 	/**
