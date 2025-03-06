@@ -15,7 +15,8 @@
 		"rootDir": "src",
 		"outDir": "dist",
 		"paths": { "src": ["src"] },
-		"verbatimModuleSyntax": true
+		"verbatimModuleSyntax": true,
+		"forceConsistentCasingInFileNames": true
 	},
 	"include": ["src/**/*"]
 }
