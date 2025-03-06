@@ -12,6 +12,8 @@
 		"skipLibCheck": true,
 		"moduleResolution": "node16",
 		"baseUrl": ".",
+		"rootDir": "src",
+		"outDir": "dist",
 		"paths": { "src": ["src"] },
 		"verbatimModuleSyntax": true
 	},

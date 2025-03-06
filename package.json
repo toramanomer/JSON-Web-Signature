@@ -5,7 +5,8 @@
 	"scripts": {
 		"test": "vitest run",
 		"test:watch": "vitest",
-		"format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\""
+		"format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+		"build": "tsc"
 	},
 	"keywords": [
 		"jws",
