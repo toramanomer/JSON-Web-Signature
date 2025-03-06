@@ -2,6 +2,8 @@
 
 Implementation of JSON Web Signature (JWS) according to [RFC 7515](https://tools.ietf.org/html/rfc7515).
 
+> **Zero Dependencies**: This project relies solely on Node.js built-in modules and has no production dependencies.
+
 ## Serialization Formats
 
 | Feature                          | JWS Compact Serialization     | General JWS JSON Serialization          | Flattened JWS JSON Serialization |
