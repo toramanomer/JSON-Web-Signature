@@ -97,10 +97,16 @@ export const createFlattenedJws = (input: CreateFlattenedJwsInput) => {
 		throw new TypeError('payload must be a buffer')
 
 	// Validate protectedHeader if present
-	if (!!protectedHeader && !isJsonObject(protectedHeader))
+	if (
+		Object.hasOwn(input, 'protectedHeader') &&
+		!isJsonObject(protectedHeader)
+	)
 		throw new TypeError('protectedHeader must be an object if provided')
 	// Validate protectedHeader if present
-	if (!!unprotectedHeader && !isJsonObject(unprotectedHeader))
+	if (
+		Object.hasOwn(input, 'unprotectedHeader') &&
+		!isJsonObject(unprotectedHeader)
+	)
 		throw new TypeError('unprotectedHeader must be an object if provided')
 
 	// Ensure at least one of protectedHeader or unprotectedHeader is provided

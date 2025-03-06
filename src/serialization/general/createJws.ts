@@ -22,7 +22,7 @@ export const createGeneralJws = (input: CreateGeneralJwsInput) => {
 		throw new TypeError('The "input" argument must be of type object')
 
 	if (!Array.isArray(input.signatures))
-		throw new Error('The "signatures" property must be an array')
+		throw new TypeError('The "signatures" property must be an array')
 	if (!input.signatures.length)
 		throw new Error('At least one signature must be provided')
 
