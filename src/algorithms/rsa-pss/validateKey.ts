@@ -1,6 +1,6 @@
 import type { KeyObject } from 'node:crypto'
 
-import { InvalidKeyError } from '../InvalidKeyError.js'
+import { KeyError } from 'src/errors/KeyError.js'
 import { rsaPssParams, type RsaPssAlgorithm } from './params.js'
 
 interface ValidateRsaPssKeyInput {
@@ -20,15 +20,12 @@ export const validateRsaPssKey = ({
 	const expectedKeyType = usage === 'sign' ? signKeyType : verifyKeyType
 
 	if (key.type !== expectedKeyType)
-		throw InvalidKeyError.invalidType(algorithm, expectedKeyType)
+		throw KeyError.invalidType(algorithm, expectedKeyType)
 
 	if (key.asymmetricKeyType !== asymmetricKeyType)
-		throw InvalidKeyError.invalidAsymmetricKeyType(
-			algorithm,
-			asymmetricKeyType
-		)
+		throw KeyError.invalidAsymmetricKeyType(algorithm, asymmetricKeyType)
 
 	const keySizeInBits = key.asymmetricKeyDetails?.modulusLength
 	if (!keySizeInBits || keySizeInBits < minKeyBits)
-		throw InvalidKeyError.invalidSize(algorithm, minKeyBits / 8)
+		throw KeyError.invalidSize(algorithm, minKeyBits / 8)
 }

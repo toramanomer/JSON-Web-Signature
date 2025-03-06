@@ -1,6 +1,6 @@
 import type { KeyObject } from 'node:crypto'
 
-import { InvalidKeyError } from '../InvalidKeyError.js'
+import { KeyError } from 'src/errors/KeyError.js'
 import { ecdsaParams, type EcdsaAlgorithm } from './params.js'
 
 interface ValidateEcdsaKeyInput {
@@ -20,14 +20,11 @@ export const validateEcdsaKey = ({
 	const expectedKeyType = usage === 'sign' ? signKeyType : verifyKeyType
 
 	if (key.type !== expectedKeyType)
-		throw InvalidKeyError.invalidType(algorithm, expectedKeyType)
+		throw KeyError.invalidType(algorithm, expectedKeyType)
 
 	if (key.asymmetricKeyType !== asymmetricKeyType)
-		throw InvalidKeyError.invalidAsymmetricKeyType(
-			algorithm,
-			asymmetricKeyType
-		)
+		throw KeyError.invalidAsymmetricKeyType(algorithm, asymmetricKeyType)
 
 	if (key.asymmetricKeyDetails?.namedCurve !== namedCurve)
-		throw InvalidKeyError.invalidCurve(algorithm)
+		throw KeyError.invalidCurve(algorithm)
 }
