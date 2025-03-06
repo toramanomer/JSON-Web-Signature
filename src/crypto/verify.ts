@@ -8,12 +8,19 @@ import { verifyRsa } from 'src/algorithms/rsa/verify.js'
 import { verifyEcdsa } from 'src/algorithms/ecdsa/verify.js'
 import { verifyRsaPss } from 'src/algorithms/rsa-pss/verify.js'
 
-export const verifySignature = (
-	signingInput: string,
-	signature: Buffer,
-	algorithm: Algorithm,
+type VerifySignatureInput = {
+	algorithm: Algorithm
 	key: KeyObject
-): boolean => {
+	signature: Buffer
+	signingInput: string
+}
+
+export const verifySignature = ({
+	algorithm,
+	key,
+	signature,
+	signingInput
+}: VerifySignatureInput): boolean => {
 	switch (algorithm) {
 		// HMAC with SHA-2 Functions
 		case 'HS256':
