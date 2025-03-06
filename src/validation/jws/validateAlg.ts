@@ -1,10 +1,11 @@
-import { algorithms } from 'src/algorithms/algorithms.js'
+import { algorithms, type Algorithm } from 'src/algorithms/algorithms.js'
 import type { JWSHeaderParameters } from 'src/types/jws.js'
 
 import { InvalidJWSHeaderParam } from './InvalidJWSHeaderParam.js'
 
 export function validateAlg(
-	header: Partial<JWSHeaderParameters>
+	header: Partial<JWSHeaderParameters>,
+	allowedAlgorithms: ReadonlyArray<Algorithm> = algorithms
 ): asserts header is JWSHeaderParameters {
 	if (!header.alg)
 		throw new InvalidJWSHeaderParam(
@@ -13,7 +14,7 @@ export function validateAlg(
 			'ALG_REQUIRED'
 		)
 
-	if (!algorithms.includes(header.alg))
+	if (!allowedAlgorithms.includes(header.alg))
 		throw new InvalidJWSHeaderParam(
 			`Invalid algorithm: ${header.alg}`,
 			'alg',
