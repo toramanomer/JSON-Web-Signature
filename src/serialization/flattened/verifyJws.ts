@@ -1,15 +1,19 @@
-import { Buffer } from 'node:buffer'
-import { KeyObject } from 'node:crypto'
+import { isKeyObject } from 'node:util/types'
+import type { KeyObject } from 'node:crypto'
 
-import type { Algorithm } from 'src/algorithms/algorithms.js'
-import type { JWSHeaderParameters } from 'src/types/jws.js'
+import { algorithms, type Algorithm } from 'src/algorithms/algorithms.js'
+import type { JWSHeaderParameters, JWSProtectedHeader } from 'src/types/jws.js'
 
 import { verifySignature } from 'src/crypto/verify.js'
 
+import { base64UrlDecode, isBase64url } from 'src/encoding/base64url.js'
+
+import { isString } from 'src/validation/common/isString.js'
 import { isObject } from 'src/validation/common/isObject.js'
 import { isDisjoint } from 'src/validation/common/isDisjoint.js'
 import { isJsonObject } from 'src/validation/common/isJsonObject.js'
 
+import { validateAlg } from 'src/validation/jws/validateAlg.js'
 import { validateKid } from 'src/validation/jws/validateKid.js'
 import { validateJwk } from 'src/validation/jws/validateJwk.js'
 import { validateJku } from 'src/validation/jws/validateJku.js'
@@ -21,178 +25,151 @@ export interface VerifyFlattenedJwsInput {
 	/**
 	 * The JWS to verify (in flattened JSON serialization format)
 	 */
-	jws: {
+	readonly jws: Readonly<{
 		payload: string
 		protected?: string
 		header?: JWSHeaderParameters
 		signature: string
-	}
+	}>
 
-	key: KeyObject
+	readonly key: KeyObject
 
 	/**
 	 * Optional list of allowed algorithms
 	 * If provided, the algorithm in the JWS header must be in this list
 	 */
-	allowedAlgorithms?: Algorithm[]
+	readonly allowedAlgorithms?: Algorithm[]
 }
 
-type ValidJWSResult = { valid: true; payload: any; header: Record<string, any> }
-type InvalidJWSResult = { valid: false; error: string }
-type VerifyJWSResult = ValidJWSResult | InvalidJWSResult
+export function verifyFlattenedJws(input: VerifyFlattenedJwsInput) {
+	if (!isObject(input))
+		throw new TypeError('The "input" argument must be an object')
 
-const base64UrlDecode = (input: string) => Buffer.from(input, 'base64url')
+	const { jws, key, allowedAlgorithms } = input
 
-export function verifyFlattenedJws({
-	jws,
-	key,
-	allowedAlgorithms
-}: VerifyFlattenedJwsInput): VerifyJWSResult {
-	try {
-		// Validate input structure
-		if (!isObject(jws))
-			return { valid: false, error: 'Invalid JWS: must be an object' }
+	if (!isObject(jws))
+		throw new TypeError('The "jws" argument must be an object')
 
-		const {
-			payload,
-			protected: encodedProtectedHeader,
-			header,
-			signature
-		} = jws
-
-		// Validate required fields
-		if (typeof payload !== 'string') {
-			return {
-				valid: false,
-				error: 'Invalid JWS: payload must be a string'
-			}
-		}
-
-		if (typeof signature !== 'string') {
-			return {
-				valid: false,
-				error: 'Invalid JWS: signature must be a string'
-			}
-		}
-
-		// At least one header must be present
-		if (!encodedProtectedHeader && !header) {
-			return {
-				valid: false,
-				error: 'Invalid JWS: either protected or unprotected header must be present'
-			}
-		}
-
-		// Parse protected header if present
-		let protectedHeader: JWSHeaderParameters | undefined
-		if (encodedProtectedHeader) {
-			if (typeof encodedProtectedHeader !== 'string') {
-				return {
-					valid: false,
-					error: 'Invalid JWS: protected header must be a string'
-				}
-			}
-
-			try {
-				const decoded = base64UrlDecode(encodedProtectedHeader)
-				protectedHeader = JSON.parse(decoded.toString())
-			} catch {
-				return {
-					valid: false,
-					error: 'Invalid JWS: protected header must be valid base64url-encoded JSON'
-				}
-			}
-		}
-
-		// Validate header if present
-		if (header && !isJsonObject(header)) {
-			return {
-				valid: false,
-				error: 'Invalid JWS: header must be an object if present'
-			}
-		}
-
-		// Ensure header parameter names are disjoint
-		if (!isDisjoint(protectedHeader, header)) {
-			return {
-				valid: false,
-				error: 'Invalid JWS: Header Parameter names must be disjoint between protected and unprotected headers'
-			}
-		}
-
-		const joseHeader = { ...protectedHeader, ...header }
-		const algorithm = joseHeader.alg
-
-		// Validate algorithm
-		try {
-			// validateAlg({ algorithm, allowedAlgorithms })
-		} catch (error) {
-			return {
-				valid: false,
-				error: error instanceof Error ? error.message : String(error)
-			}
-		}
-
-		try {
-			validateJku(joseHeader)
-			validateJwk(joseHeader as Pick<JWSHeaderParameters, 'jwk' | 'alg'>)
-			validateKid(joseHeader)
-			validateTyp(joseHeader)
-			validateCty(joseHeader)
-			validateCrit({ protectedHeader, unprotectedHeader: header })
-		} catch (error) {
-			return {
-				valid: false,
-				error: error instanceof Error ? error.message : String(error)
-			}
-		}
-
-		// Get algorithm from either header
-
-		// Decode payload
-		let decodedPayload: any
-		try {
-			const payloadBuffer = base64UrlDecode(payload)
-			try {
-				decodedPayload = JSON.parse(payloadBuffer.toString())
-			} catch {
-				// If not valid JSON, use as string
-				decodedPayload = payloadBuffer.toString()
-			}
-		} catch {
-			return {
-				valid: false,
-				error: 'Invalid JWS: payload must be valid base64url-encoded data'
-			}
-		}
-
-		// Verify signature
-		const signatureInput =
-			encodedProtectedHeader ?
-				`${encodedProtectedHeader}.${payload}`
-			:	`.${payload}`
-
-		const signatureBuffer = base64UrlDecode(signature)
-
-		const isValid = verifySignature(
-			signatureInput,
-			signatureBuffer,
-			algorithm as Algorithm,
-			key
+	if (!isKeyObject(key))
+		throw new TypeError(
+			'The "key" argument must be an instance of KeyObject'
 		)
 
-		if (!isValid) {
-			return { valid: false, error: 'Invalid signature' }
+	if (Object.hasOwn(input, 'allowedAlgorithms')) {
+		if (!Array.isArray(allowedAlgorithms))
+			throw new TypeError('The "allowedAlgorithms" must be an array')
+		else if (allowedAlgorithms.some(algorithm => !isString(algorithm)))
+			throw new TypeError(
+				'The "allowedAlgorithms" must be an array of strings'
+			)
+		else if (new Set(allowedAlgorithms).size !== allowedAlgorithms.length)
+			throw new TypeError(
+				'The "allowedAlgorithms" must be an array of unique strings'
+			)
+		else if (
+			allowedAlgorithms.some(algorithm => !algorithms.includes(algorithm))
+		)
+			throw new TypeError(
+				'The "allowedAlgorithms" must be an array of valid algorithms'
+			)
+	}
+
+	const {
+		payload: encodedPayload,
+		protected: encodedProtectedHeader,
+		header: unprotectedHeader,
+		signature: encodedSignature
+	} = jws
+
+	let protectedHeader: JWSProtectedHeader | undefined
+
+	if (Object.hasOwn(jws, 'protected')) {
+		if (!isString(encodedProtectedHeader))
+			throw new TypeError(
+				'Invalid JWS: protected header must be a string'
+			)
+		else if (!isBase64url(encodedProtectedHeader))
+			throw new TypeError(
+				'Invalid JWS: protected header must be base64url-encoded'
+			)
+
+		try {
+			protectedHeader = JSON.parse(
+				base64UrlDecode(encodedProtectedHeader).toString('utf8')
+			)
+		} catch {
+			throw new TypeError(
+				'Invalid JWS: could not parse protected header as JSON'
+			)
 		}
 
-		// Combine headers for output
-		const combinedHeader = { ...header, ...protectedHeader }
+		// Step 3.
+		// Verify that the resulting octet sequence is a UTF-8-encoded
+		// representation of a completely valid JSON object conforming to
+		// RFC 7159 [RFC7159]; let the JWS Protected Header be this JSON
+		// object.
+		if (!isJsonObject(protectedHeader))
+			throw new TypeError(
+				'Invalid JWS: protected header must be a JSON object'
+			)
+	}
 
-		return { valid: true, payload: decodedPayload, header: combinedHeader }
-	} catch (error) {
-		return {
-			valid: false,
-			error: `Verification failed: ${error instanceof Error ? error.message : String(error)}`
-		}
+	if (Object.hasOwn(jws, 'header')) {
+		if (!isJsonObject(unprotectedHeader))
+			throw new TypeError(
+				'Invalid JWS: unprotected header must be a JSON object'
+			)
+	}
+
+	if (!protectedHeader && !unprotectedHeader)
+		throw new Error(
+			'Invalid JWS: either protected header or unprotected header must be present'
+		)
+
+	if (!isDisjoint(protectedHeader, unprotectedHeader))
+		throw new Error(
+			`Header Parameter names must be disjoint between protected and unprotected headers.`
+		)
+
+	const joseHeader = { ...protectedHeader, ...unprotectedHeader }
+
+	validateAlg(joseHeader, allowedAlgorithms)
+	validateJku(joseHeader)
+	validateJwk(joseHeader)
+	validateKid(joseHeader)
+	validateTyp(joseHeader)
+	validateCty(joseHeader)
+	validateCrit({ protectedHeader, unprotectedHeader })
+
+	if (!isString(encodedPayload))
+		throw new TypeError('Invalid JWS: payload must be a string')
+	else if (!isBase64url(encodedPayload))
+		throw new TypeError('Invalid JWS: payload must be base64url-encoded')
+
+	if (!isString(encodedSignature))
+		throw new TypeError('Invalid JWS: signature must be a string')
+	else if (!isBase64url(encodedSignature))
+		throw new TypeError('Invalid JWS: signature must be base64url-encoded')
+	const signature = base64UrlDecode(encodedSignature)
+
+	const signingInput =
+		encodedProtectedHeader ?
+			`${encodedProtectedHeader}.${encodedPayload}`
+		:	`.${encodedPayload}`
+
+	const isValid = verifySignature({
+		algorithm: joseHeader.alg,
+		key,
+		signature,
+		signingInput
+	})
+
+	if (!isValid) throw new Error('Invalid signature')
+
+	return {
+		payload: encodedPayload,
+		...(!!protectedHeader && { protected: encodedProtectedHeader }),
+		...(!!unprotectedHeader && { header: unprotectedHeader }),
+		signature: encodedSignature
 	}
 }
