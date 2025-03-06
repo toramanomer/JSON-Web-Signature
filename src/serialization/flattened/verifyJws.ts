@@ -20,6 +20,7 @@ import { validateJku } from 'src/validation/jws/validateJku.js'
 import { validateTyp } from 'src/validation/jws/validateTyp.js'
 import { validateCty } from 'src/validation/jws/validateCty.js'
 import { validateCrit } from 'src/validation/jws/validateCrit.js'
+import { InvalidJWSError } from 'src/validation/jws/InvalidJWSError.js'
 
 export interface VerifyFlattenedJwsInput {
 	/**
@@ -42,28 +43,29 @@ export interface VerifyFlattenedJwsInput {
 }
 
 export function verifyFlattenedJws(input: VerifyFlattenedJwsInput) {
-	if (!isObject(input))
-		throw new TypeError('The "input" argument must be an object')
+	if (!isObject(input)) throw new TypeError('The "input" must be an object')
 
 	const { jws, key, allowedAlgorithms } = input
 
 	if (!isObject(jws))
-		throw new TypeError('The "jws" argument must be an object')
+		throw InvalidJWSError.invalidFormat(
+			'The "jws" argument must be an object'
+		)
 
 	if (!isKeyObject(key))
-		throw new TypeError(
-			'The "key" argument must be an instance of KeyObject'
-		)
+		throw new TypeError('The provided key must be an instance of KeyObject')
 
 	if (Object.hasOwn(input, 'allowedAlgorithms')) {
 		if (!Array.isArray(allowedAlgorithms))
-			throw new TypeError('The "allowedAlgorithms" must be an array')
+			throw InvalidJWSError.invalidFormat(
+				'The "allowedAlgorithms" must be an array'
+			)
 		else if (allowedAlgorithms.some(algorithm => !isString(algorithm)))
-			throw new TypeError(
+			throw InvalidJWSError.invalidFormat(
 				'The "allowedAlgorithms" must be an array of strings'
 			)
 		else if (new Set(allowedAlgorithms).size !== allowedAlgorithms.length)
-			throw new TypeError(
+			throw InvalidJWSError.invalidFormat(
 				'The "allowedAlgorithms" must be an array of unique strings'
 			)
 		else if (
@@ -85,12 +87,12 @@ export function verifyFlattenedJws(input: VerifyFlattenedJwsInput) {
 
 	if (Object.hasOwn(jws, 'protected')) {
 		if (!isString(encodedProtectedHeader))
-			throw new TypeError(
-				'Invalid JWS: protected header must be a string'
+			throw InvalidJWSError.invalidProtectedHeader(
+				'Protected header must be a string'
 			)
 		else if (!isBase64url(encodedProtectedHeader))
-			throw new TypeError(
-				'Invalid JWS: protected header must be base64url-encoded'
+			throw InvalidJWSError.invalidProtectedHeader(
+				'Protected header must be base64url-encoded'
 			)
 
 		try {
@@ -98,38 +100,29 @@ export function verifyFlattenedJws(input: VerifyFlattenedJwsInput) {
 				base64UrlDecode(encodedProtectedHeader).toString('utf8')
 			)
 		} catch {
-			throw new TypeError(
-				'Invalid JWS: could not parse protected header as JSON'
+			throw InvalidJWSError.invalidProtectedHeader(
+				'Could not parse protected header as JSON'
 			)
 		}
 
-		// Step 3.
-		// Verify that the resulting octet sequence is a UTF-8-encoded
-		// representation of a completely valid JSON object conforming to
-		// RFC 7159 [RFC7159]; let the JWS Protected Header be this JSON
-		// object.
 		if (!isJsonObject(protectedHeader))
-			throw new TypeError(
-				'Invalid JWS: protected header must be a JSON object'
+			throw InvalidJWSError.invalidProtectedHeader(
+				'Protected header must be a JSON object'
 			)
 	}
 
 	if (Object.hasOwn(jws, 'header')) {
 		if (!isJsonObject(unprotectedHeader))
-			throw new TypeError(
-				'Invalid JWS: unprotected header must be a JSON object'
+			throw InvalidJWSError.invalidUnprotectedHeader(
+				'Unprotected header must be a JSON object'
 			)
 	}
 
 	if (!protectedHeader && !unprotectedHeader)
-		throw new Error(
-			'Invalid JWS: either protected header or unprotected header must be present'
-		)
+		throw InvalidJWSError.missingHeaders()
 
 	if (!isDisjoint(protectedHeader, unprotectedHeader))
-		throw new Error(
-			`Header Parameter names must be disjoint between protected and unprotected headers.`
-		)
+		throw InvalidJWSError.headerParametersNotDisjoint()
 
 	const joseHeader = { ...protectedHeader, ...unprotectedHeader }
 
@@ -142,14 +135,21 @@ export function verifyFlattenedJws(input: VerifyFlattenedJwsInput) {
 	validateCrit({ protectedHeader, unprotectedHeader })
 
 	if (!isString(encodedPayload))
-		throw new TypeError('Invalid JWS: payload must be a string')
+		throw InvalidJWSError.invalidPayload('Payload must be a string')
 	else if (!isBase64url(encodedPayload))
-		throw new TypeError('Invalid JWS: payload must be base64url-encoded')
+		throw InvalidJWSError.invalidPayload(
+			'Payload must be base64url-encoded'
+		)
 
 	if (!isString(encodedSignature))
-		throw new TypeError('Invalid JWS: signature must be a string')
+		throw InvalidJWSError.invalidSignatureEncoding(
+			'Signature must be a string'
+		)
 	else if (!isBase64url(encodedSignature))
-		throw new TypeError('Invalid JWS: signature must be base64url-encoded')
+		throw InvalidJWSError.invalidSignatureEncoding(
+			'Signature must be base64url-encoded'
+		)
+
 	const signature = base64UrlDecode(encodedSignature)
 
 	const signingInput =
@@ -164,7 +164,7 @@ export function verifyFlattenedJws(input: VerifyFlattenedJwsInput) {
 		signingInput
 	})
 
-	if (!isValid) throw new Error('Invalid signature')
+	if (!isValid) throw InvalidJWSError.invalidSignature()
 
 	return {
 		payload: encodedPayload,
