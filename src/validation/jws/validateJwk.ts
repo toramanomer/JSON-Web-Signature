@@ -1,99 +1,114 @@
 import type { Algorithm } from 'src/algorithms/algorithms.js'
 import type { JWSHeaderParameters } from 'src/types/jws.js'
+import { isBase64url } from 'src/encoding/base64url.js'
 import { JWSError } from 'src/errors/JWSError.js'
 import { isString } from '../common/isString.js'
 
-const ALLOWED_EC_CURVES = ['P-256', 'P-384', 'P-521'] as const
+/////////////////////////////////////////////////
+// Elliptic Curve (EC)
+/////////////////////////////////////////////////
+const allowedCurves = ['P-256', 'P-384', 'P-521'] as const
+const ecPublicParams = ['crv', 'x', 'y'] as const
+const ecPrivateParams = ['d'] as const
 
-const PRIVATE_KEY_PARAMS = [
-	'd',
-	'p',
-	'q',
-	'dp',
-	'dq',
-	'qi',
-	'k',
-	'oth'
-] as const
-
-/**
- * Validates EC-specific JWK parameters.
- */
 const validateECKey = (jwk: Record<string, unknown>) => {
-	if (!isString(jwk.crv))
+	if (!allowedCurves.includes(jwk.crv as any))
 		throw JWSError.headerParamInvalid(
-			'EC JWK must contain a "crv" (Curve) parameter'
+			`Invalid curve: ${jwk.crv}. Must be one of: ${allowedCurves.join(', ')}`
 		)
 
-	if (!ALLOWED_EC_CURVES.includes(jwk.crv as any))
-		throw JWSError.headerParamInvalid(
-			`Invalid curve: ${jwk.crv}. Must be one of: ${ALLOWED_EC_CURVES.join(', ')}`
-		)
+	for (const param of ecPublicParams)
+		if (!isString(jwk[param]))
+			throw JWSError.headerParamInvalid(
+				`"jwk" must contain a "${param}" parameter for EC keys`
+			)
+		else if (!isBase64url(jwk[param]))
+			throw JWSError.headerParamInvalid(
+				`"${param}" parameter must be a valid Base64URL-encoded string`
+			)
 
-	if (!isString(jwk.x))
-		throw JWSError.headerParamInvalid(
-			'EC JWK must contain an "x" coordinate parameter'
-		)
-
-	if (!isString(jwk.y))
-		throw JWSError.headerParamInvalid(
-			'EC JWK must contain a "y" coordinate parameter'
-		)
+	for (const param of ecPrivateParams)
+		if (param in jwk)
+			throw JWSError.headerParamInvalid(
+				`"jwk" must not contain a "${param}" parameter for EC keys`
+			)
 }
 
-/**
- * Validates RSA-specific JWK parameters.
- */
+/////////////////////////////////////////////////
+// RSA
+/////////////////////////////////////////////////
+const rsaPublicParams = ['n', 'e'] as const
+const rsaPrivateParams = ['p', 'q', 'dp', 'dq', 'qi', 'k', 'oth'] as const
+
 const validateRSAKey = (jwk: Record<string, unknown>) => {
-	if (!isString(jwk.n))
-		throw JWSError.headerParamInvalid(
-			'RSA JWK must contain a "n" (modulus) parameter'
-		)
+	for (const param of rsaPublicParams)
+		if (!isString(jwk[param]))
+			throw JWSError.headerParamInvalid(
+				`"jwk" must contain a "${param}" parameter for RSA keys`
+			)
 
-	if (!isString(jwk.e))
-		throw JWSError.headerParamInvalid(
-			'RSA JWK must contain an "e" (exponent) parameter'
-		)
+	for (const param of rsaPrivateParams)
+		if (param in jwk)
+			throw JWSError.headerParamInvalid(
+				`"jwk" must not contain a "${param}" parameter for RSA keys`
+			)
 }
 
-/**
- * Ensures JWK does not contain private key parameters.
- */
-const validateNoPrivateParams = (jwk: Record<string, unknown>) => {
-	const privateParams = PRIVATE_KEY_PARAMS.filter(param => param in jwk)
-	if (privateParams.length > 0)
-		throw JWSError.headerParamInvalid(
-			`JWK contains private key parameters: ${privateParams.join(', ')}`
-		)
-}
+/////////////////////////////////////////////////
+// Key Type
+/////////////////////////////////////////////////
+const allowedKeyTypes = ['RSA', 'EC'] as const
 
-/**
- * Validates that key type matches the algorithm requirements.
- */
 const validateKeyTypeForAlg = (kty: string, alg: Algorithm) => {
-	if (!['RSA', 'EC'].includes(kty))
+	if (!allowedKeyTypes.includes(kty as any))
 		throw JWSError.headerParamInvalid(
-			`Invalid key type. Must be one of: RSA, EC`
+			`Invalid key type. Must be one of: ${allowedKeyTypes.join(', ')}`
 		)
 
-	// RSA algorithms
-	if (['RS256', 'RS384', 'RS512', 'PS256', 'PS384', 'PS512'].includes(alg)) {
-		if (kty !== 'RSA')
+	switch (alg) {
+		case 'RS256':
+		case 'RS384':
+		case 'RS512':
+		case 'PS256':
+		case 'PS384':
+		case 'PS512':
+			if (kty !== 'RSA')
+				throw JWSError.headerParamInvalid(
+					`Algorithm ${alg} requires an RSA key (kty: "RSA")`
+				)
+			return
+		case 'ES256':
+		case 'ES384':
+		case 'ES512':
+			if (kty !== 'EC')
+				throw JWSError.headerParamInvalid(
+					`Algorithm ${alg} requires an EC key (kty: "EC")`
+				)
+			return
+		case 'HS256':
+		case 'HS384':
+		case 'HS512':
 			throw JWSError.headerParamInvalid(
-				`Algorithm ${alg} requires an RSA key (kty: "RSA"), but got "${kty}"`
+				`"jwk" header parameter is not allowed for ${alg} algorithm`
 			)
-		return
-	}
 
-	// ECDSA algorithms
-	if (['ES256', 'ES384', 'ES512'].includes(alg)) {
-		if (kty !== 'EC')
-			throw JWSError.headerParamInvalid(
-				`Algorithm ${alg} requires an EC key (kty: "EC"), but got "${kty}"`
-			)
-		return
+		default:
+			throw JWSError.headerParamInvalid(`Unsupported algorithm: ${alg}`)
 	}
 }
+
+const disAllowedKeyOpsPerUse = {
+	sig: [
+		'encrypt',
+		'decrypt',
+		'wrapKey',
+		'unwrapKey',
+		'deriveKey',
+		'deriveBits'
+	],
+	enc: ['sign', 'verify']
+}
+type Use = keyof typeof disAllowedKeyOpsPerUse
 
 /**
  * Validates the "jwk" (JSON Web Key) Header Parameter.
@@ -115,10 +130,39 @@ export const validateJwk = (header: JWSHeaderParameters) => {
 			'JWK must contain a "kty" (Key Type) parameter'
 		)
 
+	if (Object.hasOwn(jwk, 'use'))
+		if (!isString(jwk.use))
+			throw JWSError.headerParamInvalid(
+				'"use" parameter in JWK must be a string'
+			)
+
+	if (Object.hasOwn(jwk, 'key_ops'))
+		if (!Array.isArray(jwk.key_ops))
+			throw JWSError.headerParamInvalid(
+				'"key_ops" parameter in JWK must be an array'
+			)
+		else if (jwk.key_ops.some(op => !isString(op)))
+			throw JWSError.headerParamInvalid(
+				'"key_ops" parameter in JWK must contain only strings'
+			)
+		else if (jwk.key_ops.length !== new Set(jwk.key_ops).size)
+			throw JWSError.headerParamInvalid(
+				'"key_ops" parameter in JWK must not contain duplicate values'
+			)
+
+	if (Object.hasOwn(jwk, 'use') && Object.hasOwn(jwk, 'key_ops')) {
+		const disallowedOps = disAllowedKeyOpsPerUse[jwk.use as Use]
+		if (
+			disallowedOps &&
+			jwk.key_ops.some((op: any) => disallowedOps.includes(op))
+		)
+			throw JWSError.headerParamInvalid(
+				`"${jwk.use}" use does not allow the following key operations: ${disallowedOps.join(', ')}`
+			)
+	}
+
 	validateKeyTypeForAlg(jwk.kty, alg)
 
 	if (jwk.kty === 'EC') validateECKey(jwk)
 	else if (jwk.kty === 'RSA') validateRSAKey(jwk)
-
-	validateNoPrivateParams(jwk)
 }
