@@ -1,6 +1,6 @@
 import type { JWSHeaderParameters } from 'src/types/jws.js'
 import { isString } from '../common/isString.js'
-import { InvalidJWSHeaderParam } from './InvalidJWSHeaderParam.js'
+import { JWSError } from '../../errors/JWSError.js'
 
 export const validateJku = (header: JWSHeaderParameters) => {
 	if (!('jku' in header)) return
@@ -8,41 +8,31 @@ export const validateJku = (header: JWSHeaderParameters) => {
 	const jku = header.jku
 
 	if (!isString(jku))
-		throw new InvalidJWSHeaderParam(
-			'The "jku" header parameter must be a string',
-			'jku',
-			'JKU_NOT_STRING'
+		throw JWSError.headerParamInvalid(
+			'The "jku" header parameter must be a string'
 		)
 
 	try {
 		const url = new URL(jku)
 
 		if (url.protocol !== 'https:')
-			throw new InvalidJWSHeaderParam(
-				'The "jku" header parameter must use HTTPS scheme',
-				'jku',
-				'JKU_NOT_HTTPS'
+			throw JWSError.headerParamInvalid(
+				'The "jku" header parameter must use HTTPS scheme'
 			)
 
 		if (url.hash)
-			throw new InvalidJWSHeaderParam(
-				'The "jku" header parameter must not contain fragments',
-				'jku',
-				'JKU_CONTAINS_FRAGMENTS'
+			throw JWSError.headerParamInvalid(
+				'The "jku" header parameter must not contain fragments'
 			)
 
 		if (url.search)
-			throw new InvalidJWSHeaderParam(
-				'The "jku" header parameter must not contain query parameters',
-				'jku',
-				'JKU_CONTAINS_QUERY_PARAMS'
+			throw JWSError.headerParamInvalid(
+				'The "jku" header parameter must not contain query parameters'
 			)
 	} catch (error) {
-		if (error instanceof InvalidJWSHeaderParam) throw error
-		throw new InvalidJWSHeaderParam(
-			'The "jku" header parameter must be a valid URL',
-			'jku',
-			'JKU_INVALID_URL'
+		if (error instanceof JWSError) throw error
+		throw JWSError.headerParamInvalid(
+			'The "jku" header parameter must be a valid URL'
 		)
 	}
 }

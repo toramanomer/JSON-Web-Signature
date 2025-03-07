@@ -4,7 +4,7 @@ import type { Algorithm } from 'src/algorithms/algorithms.js'
 import { verifyFlattenedJws } from 'src/serialization/flattened/verifyJws.js'
 import { isObject } from 'src/validation/common/isObject.js'
 import { isString } from 'src/validation/common/isString.js'
-import { InvalidJWSError } from 'src/validation/jws/InvalidJWSError.js'
+import { JWSError } from 'src/errors/JWSError.js'
 
 export interface VerifyJWSOptions {
 	/**
@@ -27,7 +27,7 @@ export function verifyCompactJws(input: VerifyJWSOptions) {
 	const { jws, key, allowedAlgorithms } = input
 
 	if (!isString(jws))
-		throw InvalidJWSError.invalidFormat(
+		throw JWSError.invalidFormat(
 			'JWS Compact Serialization must be a string'
 		)
 
@@ -39,7 +39,7 @@ export function verifyCompactJws(input: VerifyJWSOptions) {
 	} = jws.split('.')
 
 	if (length !== 3)
-		throw InvalidJWSError.invalidFormat(
+		throw JWSError.invalidFormat(
 			'JWS Compact Serialization must have 3 components'
 		)
 

@@ -1,4 +1,28 @@
 /**
+ * Error codes for validation errors
+ */
+export const JWSErrorCodes = {
+	// Input validation errors
+	INVALID_INPUT: 'INVALID_INPUT',
+	INVALID_TYPE: 'INVALID_TYPE',
+	INVALID_FORMAT: 'INVALID_FORMAT',
+	INVALID_ALGORITHM: 'INVALID_ALGORITHM',
+	INVALID_PARAMETER: 'INVALID_PARAMETER',
+
+	// JWS specific validation errors
+	INVALID_JWS_FORMAT: 'INVALID_JWS_FORMAT',
+	INVALID_PROTECTED_HEADER: 'INVALID_PROTECTED_HEADER',
+	INVALID_UNPROTECTED_HEADER: 'INVALID_UNPROTECTED_HEADER',
+	INVALID_PAYLOAD: 'INVALID_PAYLOAD',
+	INVALID_SIGNATURE: 'INVALID_SIGNATURE',
+	INVALID_SIGNATURE_ENCODING: 'INVALID_SIGNATURE_ENCODING',
+	HEADER_PARAMETERS_NOT_DISJOINT: 'HEADER_PARAMETERS_NOT_DISJOINT',
+	MISSING_HEADERS: 'MISSING_HEADERS',
+	HEADER_PARAM_INVALID: 'HEADER_PARAM_INVALID'
+} as const
+export type JWSErrorCode = (typeof JWSErrorCodes)[keyof typeof JWSErrorCodes]
+
+/**
  * Error codes for key errors
  */
 export const KeyErrorCodes = Object.freeze({
@@ -9,7 +33,4 @@ export const KeyErrorCodes = Object.freeze({
 })
 export type KeyErrorCode = (typeof KeyErrorCodes)[keyof typeof KeyErrorCodes]
 
-/**
- * Union type of all error codes
- */
-export type ErrorCode = KeyErrorCode
+export type ErrorCode = JWSErrorCode | KeyErrorCode
