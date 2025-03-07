@@ -16,7 +16,7 @@ Implementation of JSON Web Signature (JWS) according to [RFC 7515](https://tools
 
 ## Key Requirements
 
-The keys for signing and/or verification **must be an instance of `crypto.KeyObject`**. The following subsections describe the required properties for the `crypto.KeyObject` used in signing and verification operations for each supported algorithm.
+The keys for signing and/or verification **must be an instance of [`KeyObject`](https://nodejs.org/docs/latest-v22.x/api/crypto.html#class-keyobject)**. The following subsections describe the required properties for the key used in signing and verification operations for each supported algorithm.
 
 ### HMAC with SHA-2 Functions (`HS256`, `HS384`, `HS512`)
 
