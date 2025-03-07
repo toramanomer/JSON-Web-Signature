@@ -3,7 +3,7 @@ type JsonArray = JsonPrimative | JsonComposite[]
 type JsonObject = { [key: string]: JsonPrimative | JsonComposite }
 type JsonComposite = JsonArray | JsonObject
 
-export const isJsonValue = (value: unknown): boolean => {
+const isJsonValue = (value: unknown): boolean => {
 	if (value === null) return true
 
 	if (typeof value === 'string' || typeof value === 'boolean') return true

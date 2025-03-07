@@ -2,7 +2,6 @@ import type { Algorithm } from 'src/algorithms/algorithms.js'
 import type { JWSHeaderParameters } from 'src/types/jws.js'
 import { JWSError } from 'src/errors/JWSError.js'
 import { isString } from '../common/isString.js'
-import { isJsonObject } from '../common/isJsonObject.js'
 
 const ALLOWED_EC_CURVES = ['P-256', 'P-384', 'P-521'] as const
 
@@ -88,12 +87,7 @@ export const validateJwk = (header: JWSHeaderParameters) => {
 	if (!('jwk' in header)) return
 	const { jwk, alg } = header
 
-	if (!isJsonObject(jwk))
-		throw JWSError.headerParamInvalid(
-			'The "jwk" header parameter must be a JSON object'
-		)
-
-	if (!isString(jwk.kty))
+	if (!isString(jwk?.kty))
 		throw JWSError.headerParamInvalid(
 			'JWK must contain a "kty" (Key Type) parameter'
 		)
