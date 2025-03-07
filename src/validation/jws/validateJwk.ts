@@ -1,8 +1,8 @@
 import type { Algorithm } from 'src/algorithms/algorithms.js'
 import type { JWSHeaderParameters } from 'src/types/jws.js'
+import { JWSError } from 'src/errors/JWSError.js'
 import { isString } from '../common/isString.js'
 import { isJsonObject } from '../common/isJsonObject.js'
-import { JWSError } from '../../errors/JWSError.js'
 
 const ALLOWED_EC_CURVES = ['P-256', 'P-384', 'P-521'] as const
 

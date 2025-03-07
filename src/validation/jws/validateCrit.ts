@@ -1,6 +1,6 @@
 import type { JWSProtectedHeader, JWSUnprotectedHeader } from 'src/types/jws.js'
+import { JWSError } from 'src/errors/JWSError.js'
 import { isString } from '../common/isString.js'
-import { JWSError } from '../../errors/JWSError.js'
 
 const REGISTERED_HEADER_PARAMETERS = new Set([
 	'alg',

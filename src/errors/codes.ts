@@ -1,7 +1,7 @@
 /**
  * Error codes for validation errors
  */
-export const JWSErrorCodes = {
+export const JWSErrorCodes = Object.freeze({
 	// Input validation errors
 	INVALID_INPUT: 'INVALID_INPUT',
 	INVALID_TYPE: 'INVALID_TYPE',
@@ -19,7 +19,7 @@ export const JWSErrorCodes = {
 	HEADER_PARAMETERS_NOT_DISJOINT: 'HEADER_PARAMETERS_NOT_DISJOINT',
 	MISSING_HEADERS: 'MISSING_HEADERS',
 	HEADER_PARAM_INVALID: 'HEADER_PARAM_INVALID'
-} as const
+})
 export type JWSErrorCode = (typeof JWSErrorCodes)[keyof typeof JWSErrorCodes]
 
 /**

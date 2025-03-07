@@ -1,6 +1,6 @@
 import { algorithms, type Algorithm } from 'src/algorithms/algorithms.js'
 import type { JWSHeaderParameters } from 'src/types/jws.js'
-import { JWSError } from '../../errors/JWSError.js'
+import { JWSError } from 'src/errors/JWSError.js'
 
 export function validateAlg(
 	header: Partial<JWSHeaderParameters>,
