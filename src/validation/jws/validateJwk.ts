@@ -16,6 +16,9 @@ const PRIVATE_KEY_PARAMS = [
 	'oth'
 ] as const
 
+/**
+ * Validates EC-specific JWK parameters.
+ */
 const validateECKey = (jwk: Record<string, unknown>) => {
 	if (!isString(jwk.crv))
 		throw JWSError.headerParamInvalid(
@@ -38,6 +41,9 @@ const validateECKey = (jwk: Record<string, unknown>) => {
 		)
 }
 
+/**
+ * Validates RSA-specific JWK parameters.
+ */
 const validateRSAKey = (jwk: Record<string, unknown>) => {
 	if (!isString(jwk.n))
 		throw JWSError.headerParamInvalid(
@@ -50,6 +56,9 @@ const validateRSAKey = (jwk: Record<string, unknown>) => {
 		)
 }
 
+/**
+ * Ensures JWK does not contain private key parameters.
+ */
 const validateNoPrivateParams = (jwk: Record<string, unknown>) => {
 	const privateParams = PRIVATE_KEY_PARAMS.filter(param => param in jwk)
 	if (privateParams.length > 0)
@@ -58,6 +67,9 @@ const validateNoPrivateParams = (jwk: Record<string, unknown>) => {
 		)
 }
 
+/**
+ * Validates that key type matches the algorithm requirements.
+ */
 const validateKeyTypeForAlg = (kty: string, alg: Algorithm) => {
 	if (!['RSA', 'EC'].includes(kty))
 		throw JWSError.headerParamInvalid(
@@ -83,6 +95,17 @@ const validateKeyTypeForAlg = (kty: string, alg: Algorithm) => {
 	}
 }
 
+/**
+ * Validates the "jwk" (JSON Web Key) Header Parameter.
+ *
+ * The JWK must:
+ * - Have a valid key type ("kty") matching the algorithm
+ * - Include required parameters for its key type
+ * - Not contain any private key parameters
+ *
+ * @param header - The header object containing the optional "jwk" parameter
+ * @throws {JWSError} If the "jwk" parameter is present but invalid
+ */
 export const validateJwk = (header: JWSHeaderParameters) => {
 	if (!('jwk' in header)) return
 	const { jwk, alg } = header
@@ -92,13 +115,10 @@ export const validateJwk = (header: JWSHeaderParameters) => {
 			'JWK must contain a "kty" (Key Type) parameter'
 		)
 
-	// Validate key type based on algorithm
 	validateKeyTypeForAlg(jwk.kty, alg)
 
-	// Validate key based on type
 	if (jwk.kty === 'EC') validateECKey(jwk)
 	else if (jwk.kty === 'RSA') validateRSAKey(jwk)
 
-	// Ensure no private key parameters are included
 	validateNoPrivateParams(jwk)
 }

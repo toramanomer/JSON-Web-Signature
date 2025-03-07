@@ -2,6 +2,18 @@ import type { JWSHeaderParameters } from 'src/types/jws.js'
 import { JWSError } from 'src/errors/JWSError.js'
 import { isString } from '../common/isString.js'
 
+/**
+ * Validates the "jku" (JWK Set URL) Header Parameter.
+ *
+ * The "jku" parameter must:
+ * - Be a valid URL string
+ * - Use HTTPS scheme
+ * - Not contain fragments
+ * - Not contain query parameters
+ *
+ * @param header - The header object containing the optional "jku" parameter
+ * @throws {JWSError} If the "jku" parameter is present but invalid
+ */
 export const validateJku = (header: JWSHeaderParameters) => {
 	if (!('jku' in header)) return
 

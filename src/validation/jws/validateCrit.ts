@@ -16,6 +16,20 @@ const REGISTERED_HEADER_PARAMETERS = new Set([
 	'crit'
 ])
 
+/**
+ * Validates the "crit" (Critical) Header Parameter.
+ *
+ * The "crit" parameter:
+ * - Must be in protected header only
+ * - Must be a non-empty array of strings
+ * - Must not contain registered header parameter names
+ * - Must not contain duplicates
+ * - All listed parameters must be present in the header
+ *
+ * @param protectedHeader - The protected header object
+ * @param unprotectedHeader - The unprotected header object
+ * @throws {JWSError} If the "crit" parameter is invalid
+ */
 export function validateCrit({
 	protectedHeader,
 	unprotectedHeader
